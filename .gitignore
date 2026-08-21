@@ -3,3 +3,4 @@ lib
 .package-smoke-*
 *.tsbuildinfo
 .DS_Store
+*.tgz
