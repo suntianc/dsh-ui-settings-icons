@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "build/**/*.ts",
+    "tsdown.config.ts",
+    "vitest.config.ts"
+  ],
+  "exclude": ["src/client", "lib", "node_modules"]
+}

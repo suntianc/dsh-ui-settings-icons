@@ -1,0 +1,31 @@
+.triggerLabel {
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.action {
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  display: flex;
+}
+
+.error {
+  max-width: 180px;
+  color: var(--dsw-alias-state-error-primary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  line-height: 18px;
+  overflow: hidden;
+}
+
+.section {
+  flex-direction: column;
+  width: 100%;
+  display: flex;
+}
+
+.section > [data-slot="settings.general.item"] > :last-child {
+  border-bottom: none;
+}

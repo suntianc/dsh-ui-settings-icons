@@ -1,0 +1,5 @@
+node_modules
+lib
+.package-smoke-*
+*.tsbuildinfo
+.DS_Store
