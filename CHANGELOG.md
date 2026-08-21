@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.1] - 2026-08-21
+
+### Fixed
+- Registered Host-side `ui-onboarding` settings namespace schema to support saving the internal testing notice acknowledgement state.
+- Fixed 6-petal SVG cutout coordinates in `OpenAIIcon` to eliminate solid black region.
+
 ## [0.1.0] - 2026-08-21
 
 ### Added

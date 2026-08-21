@@ -1,15 +1,14 @@
-/**
- * Host-side Cordis plugin entry for dsh-ui-settings-icons.
- */
 import type { Context } from '@deepseek-ai/cordis'
-import Schema from '@deepseek-ai/schemastery'
+import z from '@deepseek-ai/schemastery'
+import { settingsNamespace } from '@deepseek-ai/dsh-settings'
 
-export interface Config {}
+/** Durable settings namespace for product-wide GUI onboarding facts. */
+const ONBOARDING_SETTINGS_NAMESPACE = 'ui-onboarding'
+const OnboardingSettingsSchema = z.object({ welcomeNoticeVersion: z.string() })
 
-export const Config: Schema<Config> = Schema.object({})
-
-export const name = 'ui-settings-icons'
-
-export function apply(_ctx: Context, _config?: Config): void {
-  // Pure UI client extension; Host registration is a lifecycle no-op.
+/** Register the durable GUI-onboarding section when a settings provider exists. */
+export function apply(ctx: Context): void {
+  ctx.inject(['settings'], (settingsCtx: any) => {
+    settingsCtx.settings.register(settingsNamespace(ONBOARDING_SETTINGS_NAMESPACE), OnboardingSettingsSchema)
+  })
 }
