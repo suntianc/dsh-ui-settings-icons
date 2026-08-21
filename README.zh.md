@@ -63,7 +63,7 @@ export function apply(ctx: ClientContext): void {
 
 ## 环境要求
 
-- DeepSeek Harness `0.1.0-rc.7` 或兼容的后续 `0.1.x` 版本。
+- DeepSeek Harness `0.1.1-rc.1` 或兼容的后续 `0.1.x` 版本。
 - Node.js `^22.19.0` 或 `>=24.0.0`。
 
 ## 从 npm 安装（推荐）

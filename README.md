@@ -63,7 +63,7 @@ export function apply(ctx: ClientContext): void {
 
 ## Requirements
 
-- DeepSeek Harness `0.1.0-rc.7` or a compatible later `0.1.x` release.
+- DeepSeek Harness `0.1.1-rc.1` or a compatible later `0.1.x` release.
 - Node.js `^22.19.0` or `>=24.0.0`.
 
 ## Install from npm (recommended)

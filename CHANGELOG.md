@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.2] - 2026-08-21
+
+### Changed
+
+- Raised the minimum DeepSeek Harness baseline to `0.1.1-rc.1` across peer dependencies, development dependencies, and bilingual requirements documentation.
+- Updated packaged-artifact validation to require rc.1 for directly declared DSH packages while allowing legitimate older transitive snapshots embedded by upstream packages.
+
 ## [0.1.1] - 2026-08-21
 
 ### Fixed
