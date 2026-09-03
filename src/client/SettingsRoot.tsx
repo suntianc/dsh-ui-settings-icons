@@ -1,8 +1,10 @@
-import { useCallback, useEffect, useId, useRef, useState } from 'react'
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
 import type { ReactElement } from 'react'
 import clsx from 'clsx'
-import { IconCloseOutline16 } from '@deepseek-ai/dsh-client-ui-primitives'
+import type { ConnectionState } from '@deepseek-ai/dsh-client-connection/client'
+import { ConnectionIndicator, IconCloseOutline16 } from '@deepseek-ai/dsh-client-ui-primitives'
 import { getDefaultNavIcon } from './icons/default-icons.tsx'
+import type { SettingsKey } from './locales.ts'
 import styles from './SettingsRoot.module.css'
 
 export interface SettingsSectionRow {
@@ -18,10 +20,13 @@ export interface SettingsOnboardingStepRow {
 
 export interface EnhancedSettingsRootProps {
   wide: boolean
+  reconnect: () => void
+  useConnectionState: <T>(selector: (state: ConnectionState | undefined) => T) => T
   useSections: <T>(selector: (rows: SettingsSectionRow[]) => T) => T
   useOnboardingSteps: <T>(selector: (steps: SettingsOnboardingStepRow[]) => T) => T
-  useSessions?: <T>(selector: (state: any) => T) => T
+  useSessions: <T>(selector: (state: any) => T) => T
   renderSlot: any
+  t: (key: SettingsKey) => string
 }
 
 interface SettingsPanelProps {
@@ -32,13 +37,15 @@ interface SettingsPanelProps {
   onClose: () => void
 }
 
+const RECOVERY_CONFIRMATION_MS = 2_000
+
 function SettingsPanel({ rows, renderSlot, activeId, onSelect, onClose }: SettingsPanelProps): ReactElement {
-  const active = rows.find((r) => r.id === activeId)?.id ?? rows[0]?.id
+  const active = rows.find((row) => row.id === activeId)?.id ?? rows[0]?.id
   const titleId = useId()
 
   useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose()
     }
     document.addEventListener('keydown', onKeyDown)
     return () => {
@@ -111,32 +118,71 @@ function SettingsPanel({ rows, renderSlot, activeId, onSelect, onClose }: Settin
 }
 
 export function SettingsRoot(props: EnhancedSettingsRootProps): ReactElement {
-  const { wide, useSections, useOnboardingSteps, useSessions, renderSlot } = props
+  const {
+    wide,
+    reconnect,
+    useConnectionState,
+    useSections,
+    useOnboardingSteps,
+    useSessions,
+    renderSlot,
+    t,
+  } = props
   const [open, setOpen] = useState(false)
   const [activeId, setActiveId] = useState<string | undefined>(undefined)
   const [completedOnboarding, setCompletedOnboarding] = useState<Set<string>>(() => new Set())
+  const [showRecovery, setShowRecovery] = useState(false)
+  const triggerButton = useRef<HTMLButtonElement>(null)
+  const wasOpen = useRef(open)
 
   const close = useCallback(() => {
     setOpen(false)
     setActiveId(undefined)
   }, [])
 
+  useEffect(() => {
+    if (wasOpen.current && !open) triggerButton.current?.focus()
+    wasOpen.current = open
+  }, [open])
+
   const openSection = useCallback((id: string) => {
     setActiveId(id)
     setOpen(true)
   }, [])
 
-  const rows = useSections((s) => s)
-  const onboardingSteps = useOnboardingSteps((s) => s)
-  const onboardingActive = useSessions?.((state: any) => (
-    state?.phase === 'ready' && (state?.current === undefined || state?.byId?.[state?.current]?.blank === true)
-  )) ?? false
-  const onboardingStep = onboardingActive ? onboardingSteps.find((step) => !completedOnboarding.has(step.id)) : undefined
+  const rows = useSections((sections) => sections)
+  const connectionState = useConnectionState((state) => state)
+  const previousConnectionState = useRef(connectionState)
+  const onboardingSteps = useOnboardingSteps((steps) => steps)
+  const onboardingActive = useSessions((state: any) => (
+    state.phase === 'ready'
+      && (state.current === undefined || state.byId[state.current]?.blank === true)
+  ))
+  const onboardingStep = onboardingActive
+    ? onboardingSteps.find((step) => !completedOnboarding.has(step.id))
+    : undefined
 
   useEffect(() => {
     if (onboardingActive) return
     setCompletedOnboarding(new Set())
   }, [onboardingActive])
+
+  useLayoutEffect(() => {
+    const previous = previousConnectionState.current
+    previousConnectionState.current = connectionState
+    if (connectionState !== 'connected') {
+      setShowRecovery(false)
+      return
+    }
+    if (previous !== 'disconnected' && previous !== 'connecting') return
+    setShowRecovery(true)
+    const timeout = window.setTimeout(() => {
+      setShowRecovery(false)
+    }, RECOVERY_CONFIRMATION_MS)
+    return () => {
+      window.clearTimeout(timeout)
+    }
+  }, [connectionState])
 
   const completeOnboardingStep = useCallback((id: string) => {
     setCompletedOnboarding((previous) => {
@@ -145,17 +191,35 @@ export function SettingsRoot(props: EnhancedSettingsRootProps): ReactElement {
     })
   }, [])
 
+  let connectionIndicator: 'disconnected' | 'connecting' | 'recovered' | undefined
+  if (connectionState === 'disconnected') connectionIndicator = 'disconnected'
+  else if (connectionState === 'connecting') connectionIndicator = 'connecting'
+  else if (showRecovery) connectionIndicator = 'recovered'
+
   return (
     <>
-      <button
-        type="button"
-        className={clsx(styles.trigger, !wide && styles.rail)}
-        aria-haspopup="dialog"
-        aria-expanded={open}
-        onClick={() => { setOpen(true) }}
-      >
-        {renderSlot('settings.trigger', { wide })}
-      </button>
+      <div className={clsx(styles.triggerRow, !wide && styles.railRow)}>
+        <button
+          ref={triggerButton}
+          type="button"
+          className={clsx(styles.trigger, !wide && styles.rail)}
+          aria-haspopup="dialog"
+          aria-expanded={open}
+          onClick={() => { setOpen(true) }}
+        >
+          {renderSlot('settings.trigger', { wide })}
+        </button>
+        <ConnectionIndicator
+          state={wide ? connectionIndicator : undefined}
+          disconnectedLabel={t('connection.error')}
+          reconnectLabel={t('connection.retry')}
+          connectingLabel={t('connection.connecting')}
+          recoveredLabel={t('connection.connected')}
+          reconnectActionLabel={t('connection.reconnect')}
+          restartActionLabel={t('connection.restart')}
+          onReconnect={reconnect}
+        />
+      </div>
       {open && (
         <SettingsPanel
           rows={rows}

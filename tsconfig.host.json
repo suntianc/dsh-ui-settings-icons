@@ -6,6 +6,7 @@
   "include": [
     "src/**/*.ts",
     "build/**/*.ts",
+    "tests/host-apply.spec.ts",
     "tsdown.config.ts",
     "vitest.config.ts"
   ],

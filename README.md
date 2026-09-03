@@ -5,7 +5,7 @@
 
 English | [中文](README.zh.md)
 
-Current release: **v0.1.0**
+Current release: **v0.1.3-alpha.5**
 
 A self-contained [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) UI plugin that enhances the DSH Settings navigation sidebar with custom icon support. It opens a new keyed slot (`settings.section.icon`) for third-party plugins while providing built-in vector icons for known capability packages.
 
@@ -28,7 +28,7 @@ A self-contained [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harn
 ### Full Chrome and Accessibility Parity
 
 - Retains 100% feature and visual parity with DSH's default settings shell.
-- Supports keyboard navigation (`Escape` closes dialog, focus traps), ARIA dialog attributes (`aria-modal`, `aria-labelledby`, `aria-current`), wide/compact sidebar trigger states, and the native configuration file launcher (`settings.action` / `open-document`).
+- Supports keyboard navigation (`Escape` closes the dialog and restores trigger focus), ARIA dialog attributes (`aria-modal`, `aria-labelledby`, `aria-current`), wide/compact sidebar trigger states, current connection recovery/reconnect feedback, and the native configuration file launcher (`settings.action` / `open-document`).
 
 ### Zero-Conflict Cordis Composition
 
@@ -40,11 +40,14 @@ A self-contained [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harn
 If you are developing a DSH plugin and want to supply a custom navigation icon for your settings section:
 
 ```tsx
-import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
+import type { Context } from '@deepseek-ai/cordis'
+import type {} from '@deepseek-ai/dsh-client-ui-renderer/client'
+import type {} from '@deepseek-ai/dsh-client-ui-settings/client'
+import type {} from 'dsh-ui-settings-icons/client'
 import { MyPluginIcon } from './MyPluginIcon.tsx'
 import { MySettingsPanel } from './MySettingsPanel.tsx'
 
-export function apply(ctx: ClientContext): void {
+export function apply(ctx: Context): void {
   // 1. Register your settings section body
   ctx.slots.inject('settings.section', () => ctx.slots.register({
     name: 'settings.section',
@@ -63,15 +66,17 @@ export function apply(ctx: ClientContext): void {
 
 ## Requirements
 
-- DeepSeek Harness `0.1.1-rc.1` or a compatible later `0.1.x` release.
+- DeepSeek Harness `0.1.2-alpha.5` (the tested package baseline).
 - Node.js `^22.19.0` or `>=24.0.0`.
+
+Plugin versions through `0.1.2` target the retired DSH `0.1.1-rc.1` client topology and do not load on `0.1.2-alpha.5`.
 
 ## Install from npm (recommended)
 
 The npm package includes prebuilt Host and browser bundles, so no install-time build permission is required:
 
 ```sh
-dsh plugin --profile web add dsh-ui-settings-icons
+dsh plugin --profile web add dsh-ui-settings-icons@0.1.3-alpha.5
 ```
 
 Restart `dsh web`, open Settings, and enjoy customized section icons.
@@ -79,7 +84,7 @@ Restart `dsh web`, open Settings, and enjoy customized section icons.
 ## Install a prebuilt release
 
 ```sh
-dsh plugin --profile web add https://github.com/suntianc/dsh-ui-settings-icons/releases/download/v0.1.0/dsh-ui-settings-icons-0.1.0.tgz
+dsh plugin --profile web add https://github.com/suntianc/dsh-ui-settings-icons/releases/download/v0.1.3-alpha.5/dsh-ui-settings-icons-0.1.3-alpha.5.tgz
 ```
 
 Restart `dsh web` and open Settings.
@@ -95,7 +100,7 @@ Git dependencies are built by the package's `prepare` script. pnpm 10+ blocks th
 For a reproducible install, pin a release tag or commit:
 
 ```sh
-dsh plugin --profile web add github:suntianc/dsh-ui-settings-icons#v0.1.0
+dsh plugin --profile web add github:suntianc/dsh-ui-settings-icons#v0.1.3-alpha.5
 ```
 
 ## Install a tarball
@@ -105,7 +110,7 @@ git clone https://github.com/suntianc/dsh-ui-settings-icons.git
 cd dsh-ui-settings-icons
 pnpm install
 pnpm pack
-dsh plugin --profile web add ./dsh-ui-settings-icons-0.1.0.tgz
+dsh plugin --profile web add ./dsh-ui-settings-icons-0.1.3-alpha.5.tgz
 ```
 
 ## Upgrade
@@ -113,11 +118,11 @@ dsh plugin --profile web add ./dsh-ui-settings-icons-0.1.0.tgz
 Stop the running `dsh web` process and update the Web profile to the current release:
 
 ```sh
-dsh plugin --profile web add dsh-ui-settings-icons@0.1.0
+dsh plugin --profile web add dsh-ui-settings-icons@0.1.3-alpha.5
 dsh plugin --profile web list
 ```
 
-After the list reports `dsh-ui-settings-icons@0.1.0`, restart `dsh web` and refresh the browser.
+After the list reports `dsh-ui-settings-icons@0.1.3-alpha.5`, restart `dsh web` and refresh the browser.
 
 ## Host configuration
 
@@ -139,7 +144,7 @@ pnpm run check
 
 - `lib/index.js` — Host plugin entry point;
 - `lib/invariant.js` — Slot constants companion;
-- `lib/client.js` — Loader-compatible browser plugin with inline CSS Modules;
+- `lib/client.cjs` — Loader-compatible browser plugin with inline CSS Modules;
 - `lib/types/**` — TypeScript declarations.
 
 ## Friendship links

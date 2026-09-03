@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import { SettingsRoot } from '../src/client/SettingsRoot.tsx'
 import type { SettingsOnboardingStepRow, SettingsSectionRow } from '../src/client/SettingsRoot.tsx'
@@ -9,7 +9,10 @@ function CustomCustomIcon() {
 }
 
 describe('SettingsRoot with icon enhancement', () => {
-  function createProps(customIcons: Record<string, () => ReactNode> = {}) {
+  function createProps(
+    customIcons: Record<string, () => ReactNode> = {},
+    connectionState: 'connected' | 'connecting' | 'disconnected' = 'connected',
+  ) {
     const sections: SettingsSectionRow[] = [
       { id: 'general', order: 0, label: 'General' },
       { id: 'models', order: 10, label: 'Models' },
@@ -19,6 +22,7 @@ describe('SettingsRoot with icon enhancement', () => {
     ]
     const onboardingSteps: SettingsOnboardingStepRow[] = []
 
+    const reconnect = vi.fn()
     const renderSlot = vi.fn((name: string, _owner: any, opts?: any) => {
       if (name === 'settings.trigger') {
         return <span>Settings Trigger</span>
@@ -43,10 +47,26 @@ describe('SettingsRoot with icon enhancement', () => {
     return {
       props: {
         wide: true,
+        reconnect,
+        useConnectionState: (fn: (state: typeof connectionState) => any) => fn(connectionState),
         useSections: (fn: (s: SettingsSectionRow[]) => any) => fn(sections),
         useOnboardingSteps: (fn: (s: SettingsOnboardingStepRow[]) => any) => fn(onboardingSteps),
+        useSessions: (fn: (state: any) => any) => fn({
+          phase: 'ready',
+          current: 'existing',
+          byId: { existing: { blank: false } },
+        }),
         renderSlot,
+        t: (key: string) => ({
+          'connection.error': 'Disconnected',
+          'connection.retry': 'Reconnect now',
+          'connection.connecting': 'Connecting',
+          'connection.connected': 'Connected',
+          'connection.reconnect': 'Disconnected, reconnect now',
+          'connection.restart': 'Connecting, restart now',
+        })[key] ?? key,
       },
+      reconnect,
       renderSlot,
     }
   }
@@ -97,8 +117,52 @@ describe('SettingsRoot with icon enhancement', () => {
     fireEvent.click(codexButton)
     expect(screen.getByTestId('section-body-codex-auth')).toBeDefined()
 
-    // Press Escape
     fireEvent.keyDown(document, { key: 'Escape' })
     expect(screen.queryByRole('dialog')).toBeNull()
+  })
+
+  it('restores focus to the settings trigger after the dialog closes', () => {
+    const { props } = createProps()
+    render(<SettingsRoot {...props} />)
+    const trigger = screen.getByRole('button', { name: /settings trigger/i })
+
+    fireEvent.click(trigger)
+    fireEvent.keyDown(document, { key: 'Escape' })
+
+    expect(document.activeElement).toBe(trigger)
+  })
+
+  it('renders the current connection indicator and reconnect action', () => {
+    const { props, reconnect } = createProps({}, 'disconnected')
+    render(<SettingsRoot {...props} />)
+
+    fireEvent.click(screen.getByText(/Disconnected/))
+
+    expect(reconnect).toHaveBeenCalledOnce()
+  })
+
+  it('shows and then clears recovery confirmation after reconnecting', () => {
+    vi.useFakeTimers()
+    try {
+      const connecting = createProps({}, 'connecting').props
+      const connected = createProps({}, 'connected').props
+      const { rerender } = render(<SettingsRoot {...connecting} />)
+
+      expect(screen.getByTestId('connection-indicator').dataset['state']).toBe('connecting')
+      rerender(<SettingsRoot {...connected} />)
+      expect(screen.getByTestId('connection-indicator').dataset['state']).toBe('recovered')
+
+      act(() => { vi.advanceTimersByTime(2_000) })
+      expect(screen.queryByTestId('connection-indicator')).toBeNull()
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('suppresses connection status in compact rail mode', () => {
+    const { props } = createProps({}, 'disconnected')
+    render(<SettingsRoot {...props} wide={false} />)
+
+    expect(screen.queryByTestId('connection-indicator')).toBeNull()
   })
 })

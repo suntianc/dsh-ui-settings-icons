@@ -1,5 +1,5 @@
-import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
-import { describe, expect, it } from 'vitest'
+import type { Context as ClientContext } from '@deepseek-ai/cordis'
+import { describe, expect, it, vi } from 'vitest'
 import { apply, inject } from '../src/client/index.ts'
 
 interface SlotRecord {
@@ -7,12 +7,17 @@ interface SlotRecord {
   component: unknown
 }
 
-function bench() {
+function bench(isLoopback = true) {
   const disposers: Array<() => void> = []
   const slots: SlotRecord[] = []
   const slotSubscriptions = new Map<string, Set<() => void>>()
   const localeSubscriptions = new Set<() => void>()
   const dictionaries = new Map<string, any>()
+  const reconnect = vi.fn()
+  const connectionState = {
+    getSnapshot: () => 'connected',
+    subscribe: () => () => {},
+  }
 
   let sectionVersion = 1
   let onboardingVersion = 1
@@ -34,6 +39,12 @@ function bench() {
       subscribe: (fn: () => void) => {
         localeSubscriptions.add(fn)
         return () => { localeSubscriptions.delete(fn) }
+      },
+    },
+    remote: {
+      $host: { isLoopback },
+      settings: {
+        openSettingsDocument: vi.fn(async () => ({ ok: true })),
       },
     },
     settingsScope: {
@@ -78,12 +89,8 @@ function bench() {
     get(service: string) {
       if (service === 'connection') {
         return {
-          isLoopback: true,
-          api: {
-            settings: {
-              openDocument: async () => ({ result: { ok: true } }),
-            },
-          },
+          state: connectionState,
+          reconnect,
         }
       }
       throw new Error(`unexpected service: ${service}`)
@@ -101,6 +108,8 @@ function bench() {
     dictionaries,
     slotSubscriptions,
     localeSubscriptions,
+    reconnect,
+    connectionState,
     mutateSections(newSections: typeof registeredSections) {
       registeredSections = newSections
       sectionVersion += 1
@@ -112,7 +121,14 @@ function bench() {
 
 describe('dsh-ui-settings-icons client apply', () => {
   it('declares every consumed service', () => {
-    expect(inject).toEqual(['slots', 'locale', 'connection', 'settingsScope'])
+    expect(inject).toEqual([
+      'slots',
+      'locale',
+      'connection',
+      'remote',
+      'remote.settings',
+      'settingsScope',
+    ])
   })
 
   it('registers sidebar.settings, settings chrome, and general section', () => {
@@ -128,6 +144,14 @@ describe('dsh-ui-settings-icons client apply', () => {
     expect(slotNames).toContain('settings.section')
 
     const sidebarSlot = b.slots.find((s) => s.options['name'] === 'sidebar.settings')
+    if (sidebarSlot === undefined) throw new Error('sidebar.settings was not registered')
+    expect(sidebarSlot.options['locale']).toBe('settings')
+    const shellInjected = (sidebarSlot.options['inject'] as (() => any))()
+    expect(shellInjected.reconnect).toEqual(expect.any(Function))
+    expect(shellInjected.hooks.connectionState).toBe(b.connectionState)
+    shellInjected.reconnect()
+    expect(b.reconnect).toHaveBeenCalledOnce()
+
     const children = sidebarSlot?.options['children'] as Record<string, { kind: string; scope: string }>
     expect(children).toBeDefined()
     expect(children['settings.section.icon']).toEqual({ kind: 'keyed', scope: 'root' })
@@ -144,5 +168,13 @@ describe('dsh-ui-settings-icons client apply', () => {
     b.dispose()
     expect(b.slots).toHaveLength(0)
     expect(b.dictionaries.size).toBe(0)
+  })
+
+  it('omits the native settings-document action outside loopback', () => {
+    const b = bench(false)
+
+    expect(b.slots.some((slot) => slot.options['name'] === 'settings.action')).toBe(false)
+
+    b.dispose()
   })
 })

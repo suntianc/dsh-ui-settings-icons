@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.3-alpha.5] - 2026-09-03
+
+### Fixed
+
+- Migrated the browser plugin from the retired `@deepseek-ai/dsh-client-runtime` package to the current Cordis context and `@deepseek-ai/dsh-client-store` module-table surface.
+- Updated settings-document opening to the current typed `remote.settings.openSettingsDocument()` contract.
+- Restored parity with the current settings shell for connection recovery status, reconnect actions, trigger focus restoration, and current elevation/geometry tokens.
+- Raised the tested dependency graph to DSH `0.1.2-alpha.5`, Cordis `4.0.2`, and Schemastery `3.18.2`, with package smoke coverage preventing prerelease-range and retired-module regressions.
+- Published the browser CommonJS artifact with the unambiguous `.cjs` extension so package tooling no longer interprets it as ESM.
+
 ## [0.1.2] - 2026-08-21
 
 ### Changed

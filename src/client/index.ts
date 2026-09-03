@@ -1,6 +1,11 @@
-import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
-import type {} from '@deepseek-ai/dsh-client-ui-settings/client'
+import type { Context as ClientContext } from '@deepseek-ai/cordis'
+import type {} from '@deepseek-ai/dsh-api-remotes/client'
+import type {} from '@deepseek-ai/dsh-client-connection/client'
 import type {} from '@deepseek-ai/dsh-client-locale/client'
+import type {} from '@deepseek-ai/dsh-client-ui-renderer/client'
+import type {} from '@deepseek-ai/dsh-client-ui-session/client'
+import type {} from '@deepseek-ai/dsh-client-ui-settings/client'
+import type {} from '@deepseek-ai/dsh-client-ui-sidebar/client'
 import { resolveSlotLabel } from '@deepseek-ai/dsh-client-ui-slots'
 import { SettingsRoot } from './SettingsRoot.tsx'
 import type { SettingsOnboardingStepRow, SettingsSectionRow } from './SettingsRoot.tsx'
@@ -16,11 +21,6 @@ export { getDefaultNavIcon } from './icons/default-icons.tsx'
 
 declare module '@deepseek-ai/dsh-client-ui-slots' {
   interface SlotMap {
-    'sidebar.settings': {
-      kind: 'single'
-      scope: 'root'
-      owner: { wide: boolean }
-    }
     'settings.section.icon': {
       kind: 'keyed'
       scope: 'root'
@@ -39,14 +39,21 @@ export interface SettingsSectionIconOwnerProps {
 
 const NS = 'settings'
 
-export const inject = ['slots', 'locale', 'connection', 'settingsScope']
+export const inject = [
+  'slots',
+  'locale',
+  'connection',
+  'remote',
+  'remote.settings',
+  'settingsScope',
+]
 
 export function apply(ctx: ClientContext): void {
   ctx.effect(() => ctx.locale.register(NS, { zh, en }), 'ui-settings-icons: dictionaries')
   const t = ctx.locale.bind(NS)
-  const connection = ctx.get('connection') as any
-  const documentController = connection?.isLoopback
-    ? new SettingsDocumentStore(connection.api, ctx.settingsScope.describe())
+  const connection = ctx.get('connection')
+  const documentController = ctx.remote.$host.isLoopback
+    ? new SettingsDocumentStore(ctx, ctx.settingsScope.describe())
     : undefined
   const documentInjected = documentController === undefined ? undefined : () => ({
     controller: documentController,
@@ -64,7 +71,11 @@ export function apply(ctx: ClientContext): void {
   let onboardingSteps: SettingsOnboardingStepRow[] = []
 
   const shellInjected = () => ({
+    reconnect: () => {
+      connection.reconnect()
+    },
     hooks: {
+      connectionState: connection.state,
       sections: {
         getSnapshot: (): SettingsSectionRow[] => {
           const version = ctx.slots.getVersion('settings.section')
@@ -108,6 +119,7 @@ export function apply(ctx: ClientContext): void {
 
   ctx.slots.inject('sidebar.settings', () => ctx.slots.register({
     name: 'sidebar.settings',
+    locale: NS,
     children: {
       'settings.trigger': {
         kind: 'single',

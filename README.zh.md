@@ -5,7 +5,7 @@
 
 [English](README.md) | 中文
 
-当前版本：**v0.1.0**
+当前版本：**v0.1.3-alpha.5**
 
 这是一个自包含的 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 界面扩展插件。它为 DSH 的设置导航侧边栏增加了自定义图标能力，开放了全新的 keyed 图标槽位（`settings.section.icon`）供第三方插件使用，并为常见的扩展包内置了精美矢量图标预设。
 
@@ -28,7 +28,7 @@
 ### 完整的交互与无障碍对齐
 
 - 与 DSH 官方默认设置面板保持 100% 的视觉风格和交互体验对齐。
-- 完整支持键盘快捷操作（`Escape` 键关闭、焦点捕获）、ARIA 对话框无障碍属性（`aria-modal`、`aria-labelledby`、`aria-current`）、侧边栏宽/窄展开自适应，以及原生配置文件打开操作（`settings.action` / `open-document`）。
+- 完整支持键盘快捷操作（`Escape` 键关闭并将焦点还原到触发按钮）、ARIA 对话框无障碍属性（`aria-modal`、`aria-labelledby`、`aria-current`）、侧边栏宽/窄展开自适应、当前连接恢复/重连反馈，以及原生配置文件打开操作（`settings.action` / `open-document`）。
 
 ### 零冲突的 Cordis 插件组合
 
@@ -40,11 +40,14 @@
 如果你正在开发 DSH 插件，并希望为自己的设置分区提供专属导航图标：
 
 ```tsx
-import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
+import type { Context } from '@deepseek-ai/cordis'
+import type {} from '@deepseek-ai/dsh-client-ui-renderer/client'
+import type {} from '@deepseek-ai/dsh-client-ui-settings/client'
+import type {} from 'dsh-ui-settings-icons/client'
 import { MyPluginIcon } from './MyPluginIcon.tsx'
 import { MySettingsPanel } from './MySettingsPanel.tsx'
 
-export function apply(ctx: ClientContext): void {
+export function apply(ctx: Context): void {
   // 1. 注册设置分区主体内容
   ctx.slots.inject('settings.section', () => ctx.slots.register({
     name: 'settings.section',
@@ -63,15 +66,17 @@ export function apply(ctx: ClientContext): void {
 
 ## 环境要求
 
-- DeepSeek Harness `0.1.1-rc.1` 或兼容的后续 `0.1.x` 版本。
+- DeepSeek Harness `0.1.2-alpha.5`（已验证的包基线）。
 - Node.js `^22.19.0` 或 `>=24.0.0`。
+
+插件 `0.1.2` 及更早版本面向已退役的 DSH `0.1.1-rc.1` 客户端拓扑，无法在 `0.1.2-alpha.5` 上加载。
 
 ## 从 npm 安装（推荐）
 
 npm 包已包含预构建的 Host 与浏览器 bundle，不需要安装期构建权限：
 
 ```sh
-dsh plugin --profile web add dsh-ui-settings-icons
+dsh plugin --profile web add dsh-ui-settings-icons@0.1.3-alpha.5
 ```
 
 重启 `dsh web`，打开设置即可体验自定义图标。
@@ -79,7 +84,7 @@ dsh plugin --profile web add dsh-ui-settings-icons
 ## 安装预构建 Release
 
 ```sh
-dsh plugin --profile web add https://github.com/suntianc/dsh-ui-settings-icons/releases/download/v0.1.0/dsh-ui-settings-icons-0.1.0.tgz
+dsh plugin --profile web add https://github.com/suntianc/dsh-ui-settings-icons/releases/download/v0.1.3-alpha.5/dsh-ui-settings-icons-0.1.3-alpha.5.tgz
 ```
 
 重启 `dsh web` 并打开设置。
@@ -95,7 +100,7 @@ Git 依赖会通过包内 `prepare` 脚本从源码构建。pnpm 10+ 默认阻�
 需要可复现安装时，固定 release tag 或 commit：
 
 ```sh
-dsh plugin --profile web add github:suntianc/dsh-ui-settings-icons#v0.1.0
+dsh plugin --profile web add github:suntianc/dsh-ui-settings-icons#v0.1.3-alpha.5
 ```
 
 ## 从 tarball 安装
@@ -105,7 +110,7 @@ git clone https://github.com/suntianc/dsh-ui-settings-icons.git
 cd dsh-ui-settings-icons
 pnpm install
 pnpm pack
-dsh plugin --profile web add ./dsh-ui-settings-icons-0.1.0.tgz
+dsh plugin --profile web add ./dsh-ui-settings-icons-0.1.3-alpha.5.tgz
 ```
 
 ## 升级
@@ -113,11 +118,11 @@ dsh plugin --profile web add ./dsh-ui-settings-icons-0.1.0.tgz
 先停止正在运行的 `dsh web`，再将 Web Profile 更新到当前版本：
 
 ```sh
-dsh plugin --profile web add dsh-ui-settings-icons@0.1.0
+dsh plugin --profile web add dsh-ui-settings-icons@0.1.3-alpha.5
 dsh plugin --profile web list
 ```
 
-列表显示 `dsh-ui-settings-icons@0.1.0` 后，重新启动 `dsh web` 并刷新浏览器。
+列表显示 `dsh-ui-settings-icons@0.1.3-alpha.5` 后，重新启动 `dsh web` 并刷新浏览器。
 
 ## Host 配置
 
@@ -139,7 +144,7 @@ pnpm run check
 
 - `lib/index.js`：Host 插件入口；
 - `lib/invariant.js`：Slot 常量伴侣模块；
-- `lib/client.js`：兼容 Loader、内联 CSS Modules 的浏览器插件；
+- `lib/client.cjs`：兼容 Loader、内联 CSS Modules 的浏览器插件；
 - `lib/types/**`：类型声明。
 
 ## 友情链接

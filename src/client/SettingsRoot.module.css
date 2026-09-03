@@ -1,16 +1,31 @@
+.triggerRow {
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  width: calc(100% + 4px);
+  margin: 4px -2px;
+  display: flex;
+}
+
+.triggerRow.railRow {
+  width: 36px;
+  margin: 8px 0 10px;
+}
+
 .trigger {
   box-sizing: border-box;
   cursor: pointer;
-  width: calc(100% + 4px);
+  width: auto;
+  min-width: 0;
   height: 42px;
   color: var(--dsw-alias-label-primary);
   background: 0 0;
   border: none;
   border-radius: 12px;
-  flex: none;
+  flex: 1;
   align-items: center;
   gap: 8px;
-  margin: 4px -2px;
+  margin: 0;
   padding: 0 10px 0 8px;
   font-family: inherit;
   font-size: 14px;
@@ -24,12 +39,14 @@
 }
 
 .trigger.rail {
+  corner-shape: round;
   border-radius: 50%;
+  flex: none;
   justify-content: center;
   gap: 0;
   width: 36px;
   height: 36px;
-  margin: 8px 0 10px;
+  margin: 0;
   padding: 0;
 }
 
@@ -60,10 +77,10 @@
   width: 800px;
   max-width: calc(100vw - 48px);
   height: min(800px, 100vh - 48px);
-  box-shadow: var(--dsw-shadow-lv3);
+  box-shadow: var(--dsw-elevation-prominent);
   --dsh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
   --dsh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
-  border-radius: 24px;
+  border-radius: 32px;
   display: flex;
   position: relative;
   overflow: hidden;

@@ -1,4 +1,7 @@
-import { createSnapshotStore } from '@deepseek-ai/dsh-client-runtime/client'
+import type { Context as ClientContext } from '@deepseek-ai/cordis'
+import type {} from '@deepseek-ai/dsh-api-remotes/client'
+import { createSnapshotStore } from '@deepseek-ai/dsh-client-store'
+import type { SettingsDescribeFace } from '@deepseek-ai/dsh-client-ui-settings/client'
 
 function messageOf(error: unknown): string {
   return error instanceof Error ? error.message : String(error)
@@ -10,6 +13,7 @@ export interface SettingsDocumentState {
   error: string | null
 }
 
+/** Derives local-document availability and invokes the current Host Remote operation. */
 export class SettingsDocumentStore {
   readonly store = createSnapshotStore<SettingsDocumentState>({
     status: 'idle',
@@ -20,8 +24,8 @@ export class SettingsDocumentStore {
   private following?: (() => void) | undefined
 
   constructor(
-    private readonly api: any,
-    private readonly describeFace: any,
+    private readonly ctx: ClientContext,
+    private readonly describeFace: SettingsDescribeFace,
   ) {}
 
   async load(): Promise<void> {
@@ -32,7 +36,7 @@ export class SettingsDocumentStore {
       state.status = 'loading'
       state.error = null
     })
-    await this.describeFace.ensure?.()
+    await this.describeFace.ensure()
     this.derive()
   }
 
@@ -44,8 +48,12 @@ export class SettingsDocumentStore {
       state.error = null
     })
     try {
-      const response = await this.api.settings.openDocument({})
-      if (!response.result.ok) throw new Error(response.result.error.message)
+      const result = await this.ctx.remote.settings.openSettingsDocument()
+      if (!result.ok) {
+        this.store.update((state) => {
+          state.error = result.error.message
+        })
+      }
     } catch (error) {
       this.store.update((state) => {
         state.error = messageOf(error)

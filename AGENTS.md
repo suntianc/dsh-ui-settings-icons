@@ -16,4 +16,11 @@ This file supplements the workspace-level `AGENTS.md`. The workspace guide remai
 - Shadows `sidebar.settings` with a higher priority (`priority: -1`)
 - Declares the `settings.section.icon` keyed slot to allow third-party plugins to provide custom icons for their `settings.section` entries
 - Provides built-in icon fallbacks for well-known plugins (such as `codex-auth`, `antigravity-auth`)
-- Preserves 100% of standard DSH settings shell behaviors (trigger button, header actions, close button, sections rendering, onboarding steps, modal shortcuts, and accessibility).
+- Preserves 100% of standard DSH settings shell behaviors (trigger button, connection recovery, header actions, close button, sections rendering, onboarding steps, modal shortcuts, and accessibility).
+
+## Compatibility baseline
+
+- Target and test against DSH `0.1.2-alpha.5`, Cordis `4.0.2`, and Schemastery `3.18.2` as one coherent dependency graph.
+- Client code uses Cordis `Context`; `@deepseek-ai/dsh-client-runtime` is retired and must not reappear.
+- Snapshot state uses the Web module-table surface `@deepseek-ai/dsh-client-store`, and settings document actions use `ctx.remote.settings.openSettingsDocument()`.
+- Keep the enhanced settings shell synchronized with the current `@deepseek-ai/dsh-client-ui-settings-general` behavior while adding only the keyed icon slot/navigation rendering delta.
