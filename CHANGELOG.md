@@ -1,6 +1,9 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+## [0.1.3-alpha.6] - 2026-09-07
+
+- Add explicit DSH `0.1.3-alpha.1` source compatibility alongside the npm alpha.5 baseline; keep dependency graphs separate.
+- Add reproducible isolated source-package checks and coherent lockfile validation.
 
 ## [0.1.3-alpha.5] - 2026-09-03
 

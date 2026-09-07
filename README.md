@@ -1,11 +1,13 @@
 # dsh-ui-settings-icons
 
+> **DSH compatibility:** Supports separately verified `0.1.2-alpha.5` and `0.1.3-alpha.1` graphs. The new DSH prerelease is source-only while its npm packages are unavailable; development dependencies retain alpha.5. See [source verification](docs/dsh-source-verification.md).
+
 [![npm version](https://img.shields.io/npm/v/dsh-ui-settings-icons.svg)](https://www.npmjs.com/package/dsh-ui-settings-icons)
 [![awesome · DSH plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com)
 
 English | [中文](README.zh.md)
 
-Current release: **v0.1.3-alpha.5**
+Current release: **v0.1.3-alpha.6**
 
 A self-contained [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) UI plugin that enhances the DSH Settings navigation sidebar with custom icon support. It opens a new keyed slot (`settings.section.icon`) for third-party plugins while providing built-in vector icons for known capability packages.
 
@@ -66,7 +68,7 @@ export function apply(ctx: Context): void {
 
 ## Requirements
 
-- DeepSeek Harness `0.1.2-alpha.5` (the tested package baseline).
+- DeepSeek Harness `0.1.2-alpha.5` or `0.1.3-alpha.1` (separately verified dependency graphs).
 - Node.js `^22.19.0` or `>=24.0.0`.
 
 Plugin versions through `0.1.2` target the retired DSH `0.1.1-rc.1` client topology and do not load on `0.1.2-alpha.5`.
@@ -76,12 +78,14 @@ Plugin versions through `0.1.2` target the retired DSH `0.1.1-rc.1` client topol
 The npm package includes prebuilt Host and browser bundles, so no install-time build permission is required:
 
 ```sh
-dsh plugin --profile web add dsh-ui-settings-icons@0.1.3-alpha.5
+dsh plugin --profile web add dsh-ui-settings-icons@0.1.3-alpha.6
 ```
 
 Restart `dsh web`, open Settings, and enjoy customized section icons.
 
 ## Install a prebuilt release
+
+These GitHub examples pin the earlier 0.1.3-alpha.5 release; use the npm command above for 0.1.3-alpha.6.
 
 ```sh
 dsh plugin --profile web add https://github.com/suntianc/dsh-ui-settings-icons/releases/download/v0.1.3-alpha.5/dsh-ui-settings-icons-0.1.3-alpha.5.tgz
@@ -90,6 +94,8 @@ dsh plugin --profile web add https://github.com/suntianc/dsh-ui-settings-icons/r
 Restart `dsh web` and open Settings.
 
 ## Install from GitHub source
+
+These GitHub examples pin the earlier 0.1.3-alpha.5 release; use the npm command above for 0.1.3-alpha.6.
 
 ```sh
 dsh plugin --profile web add github:suntianc/dsh-ui-settings-icons
@@ -106,11 +112,8 @@ dsh plugin --profile web add github:suntianc/dsh-ui-settings-icons#v0.1.3-alpha.
 ## Install a tarball
 
 ```sh
-git clone https://github.com/suntianc/dsh-ui-settings-icons.git
-cd dsh-ui-settings-icons
-pnpm install
-pnpm pack
-dsh plugin --profile web add ./dsh-ui-settings-icons-0.1.3-alpha.5.tgz
+npm pack dsh-ui-settings-icons@0.1.3-alpha.6
+dsh plugin --profile web add ./dsh-ui-settings-icons-0.1.3-alpha.6.tgz
 ```
 
 ## Upgrade
@@ -118,11 +121,11 @@ dsh plugin --profile web add ./dsh-ui-settings-icons-0.1.3-alpha.5.tgz
 Stop the running `dsh web` process and update the Web profile to the current release:
 
 ```sh
-dsh plugin --profile web add dsh-ui-settings-icons@0.1.3-alpha.5
+dsh plugin --profile web add dsh-ui-settings-icons@0.1.3-alpha.6
 dsh plugin --profile web list
 ```
 
-After the list reports `dsh-ui-settings-icons@0.1.3-alpha.5`, restart `dsh web` and refresh the browser.
+After the list reports `dsh-ui-settings-icons@0.1.3-alpha.6`, restart `dsh web` and refresh the browser.
 
 ## Host configuration
 

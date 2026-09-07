@@ -1,11 +1,13 @@
 # dsh-ui-settings-icons
 
+> **DSH 兼容性：** 已分别验证 `0.1.2-alpha.5` 与 `0.1.3-alpha.1` 两套依赖图。目标 DSH npm 包尚未发布，开发锁文件暂保留 alpha.5；新版本使用固定源码制品验证。见[源码验证说明](docs/dsh-source-verification.md)。
+
 [![npm version](https://img.shields.io/npm/v/dsh-ui-settings-icons.svg)](https://www.npmjs.com/package/dsh-ui-settings-icons)
 [![awesome · DSH plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com)
 
 [English](README.md) | 中文
 
-当前版本：**v0.1.3-alpha.5**
+当前版本：**v0.1.3-alpha.6**
 
 这是一个自包含的 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 界面扩展插件。它为 DSH 的设置导航侧边栏增加了自定义图标能力，开放了全新的 keyed 图标槽位（`settings.section.icon`）供第三方插件使用，并为常见的扩展包内置了精美矢量图标预设。
 
@@ -66,7 +68,7 @@ export function apply(ctx: Context): void {
 
 ## 环境要求
 
-- DeepSeek Harness `0.1.2-alpha.5`（已验证的包基线）。
+- DeepSeek Harness `0.1.2-alpha.5` 或 `0.1.3-alpha.1`（两套依赖图分别验证）。
 - Node.js `^22.19.0` 或 `>=24.0.0`。
 
 插件 `0.1.2` 及更早版本面向已退役的 DSH `0.1.1-rc.1` 客户端拓扑，无法在 `0.1.2-alpha.5` 上加载。
@@ -76,12 +78,14 @@ export function apply(ctx: Context): void {
 npm 包已包含预构建的 Host 与浏览器 bundle，不需要安装期构建权限：
 
 ```sh
-dsh plugin --profile web add dsh-ui-settings-icons@0.1.3-alpha.5
+dsh plugin --profile web add dsh-ui-settings-icons@0.1.3-alpha.6
 ```
 
 重启 `dsh web`，打开设置即可体验自定义图标。
 
 ## 安装预构建 Release
+
+以下 GitHub 示例固定到先前的 0.1.3-alpha.5；本次 0.1.3-alpha.6 请使用上面的 npm 安装命令。
 
 ```sh
 dsh plugin --profile web add https://github.com/suntianc/dsh-ui-settings-icons/releases/download/v0.1.3-alpha.5/dsh-ui-settings-icons-0.1.3-alpha.5.tgz
@@ -90,6 +94,8 @@ dsh plugin --profile web add https://github.com/suntianc/dsh-ui-settings-icons/r
 重启 `dsh web` 并打开设置。
 
 ## 从 GitHub 源码安装
+
+以下 GitHub 示例固定到先前的 0.1.3-alpha.5；本次 0.1.3-alpha.6 请使用上面的 npm 安装命令。
 
 ```sh
 dsh plugin --profile web add github:suntianc/dsh-ui-settings-icons
@@ -106,11 +112,8 @@ dsh plugin --profile web add github:suntianc/dsh-ui-settings-icons#v0.1.3-alpha.
 ## 从 tarball 安装
 
 ```sh
-git clone https://github.com/suntianc/dsh-ui-settings-icons.git
-cd dsh-ui-settings-icons
-pnpm install
-pnpm pack
-dsh plugin --profile web add ./dsh-ui-settings-icons-0.1.3-alpha.5.tgz
+npm pack dsh-ui-settings-icons@0.1.3-alpha.6
+dsh plugin --profile web add ./dsh-ui-settings-icons-0.1.3-alpha.6.tgz
 ```
 
 ## 升级
@@ -118,11 +121,11 @@ dsh plugin --profile web add ./dsh-ui-settings-icons-0.1.3-alpha.5.tgz
 先停止正在运行的 `dsh web`，再将 Web Profile 更新到当前版本：
 
 ```sh
-dsh plugin --profile web add dsh-ui-settings-icons@0.1.3-alpha.5
+dsh plugin --profile web add dsh-ui-settings-icons@0.1.3-alpha.6
 dsh plugin --profile web list
 ```
 
-列表显示 `dsh-ui-settings-icons@0.1.3-alpha.5` 后，重新启动 `dsh web` 并刷新浏览器。
+列表显示 `dsh-ui-settings-icons@0.1.3-alpha.6` 后，重新启动 `dsh web` 并刷新浏览器。
 
 ## Host 配置
 

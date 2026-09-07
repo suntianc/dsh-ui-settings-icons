@@ -24,3 +24,7 @@ This file supplements the workspace-level `AGENTS.md`. The workspace guide remai
 - Client code uses Cordis `Context`; `@deepseek-ai/dsh-client-runtime` is retired and must not reappear.
 - Snapshot state uses the Web module-table surface `@deepseek-ai/dsh-client-store`, and settings document actions use `ctx.remote.settings.openSettingsDocument()`.
 - Keep the enhanced settings shell synchronized with the current `@deepseek-ai/dsh-client-ui-settings-general` behavior while adding only the keyed icon slot/navigation rendering delta.
+
+## Additional verified source target
+
+DSH `0.1.3-alpha.1` at `d347e703908d0406b7a7ef80e3a0e594d86b2215` is verified through the isolated workflow in `docs/dsh-source-verification.md`. Keep the installable alpha.5 dev/lock baseline until the new npm family is available; peers explicitly include both targets. This is two separate coherent graphs, not permission to mix prereleases. Run both `pnpm run check` and the source check when changing compatibility-sensitive behavior.

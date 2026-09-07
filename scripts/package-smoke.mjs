@@ -5,8 +5,8 @@ import { access, mkdtemp, readFile, rm } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import semver from 'semver'
+import { DSH_BASELINE, DSH_SOURCE_VERSION, DSH_PEER_RANGE, DSH_VERIFY_VERSION, resolvedDshPackages } from './dsh-compatibility.mjs'
 
-const DSH_BASELINE = '0.1.2-alpha.5'
 const CORDIS_BASELINE = '4.0.2'
 const SCHEMASTERY_BASELINE = '3.18.2'
 const RETIRED_DSH_PACKAGES = new Set(['@deepseek-ai/dsh-client-runtime'])
@@ -54,7 +54,7 @@ try {
       if (RETIRED_DSH_PACKAGES.has(name)) {
         throw new Error(`package smoke: ${section}.${name} references a package retired by ${DSH_BASELINE}`)
       }
-      const expectedRange = section === 'peerDependencies' ? `^${DSH_BASELINE}` : DSH_BASELINE
+      const expectedRange = section === 'peerDependencies' ? DSH_PEER_RANGE : DSH_VERIFY_VERSION
       if (range !== expectedRange) {
         throw new Error(`package smoke: ${section}.${name} must be ${expectedRange}`)
       }
@@ -62,7 +62,8 @@ try {
       const minimum = parsed === null ? null : semver.minVersion(parsed)
       if (parsed === null
         || minimum === null
-        || !semver.satisfies(DSH_BASELINE, parsed)
+        || !semver.satisfies(section === 'peerDependencies' ? DSH_BASELINE : DSH_VERIFY_VERSION, parsed)
+        || (section === 'peerDependencies' && !semver.satisfies(DSH_SOURCE_VERSION, parsed))
         || semver.lt(minimum, DSH_BASELINE)) {
         throw new Error(`package smoke: ${section}.${name} must accept ${DSH_BASELINE} and exclude every earlier version`)
       }
@@ -85,11 +86,9 @@ try {
     throw new Error(`package smoke: dsh.client.inject references a package retired by ${DSH_BASELINE}`)
   }
   const lockfile = await readFile(resolve(sourceRoot, 'pnpm-lock.yaml'), 'utf8')
-  const dshResolutions = [...lockfile.matchAll(
-    /^ {2}['"](@deepseek-ai\/dsh-[^@'"]+)@([^('"\s:]+).*['"]:\s*$/gmu,
-  )].map(([, name, version]) => ({ name, version }))
-  if (dshResolutions.length === 0) {
-    throw new Error('package smoke: pnpm-lock.yaml contains no resolved DSH package entries')
+  const dshResolutions = resolvedDshPackages(lockfile)
+  if (dshResolutions.length === 0 || dshResolutions.some(entry => entry.version !== DSH_VERIFY_VERSION)) {
+    throw new Error('package smoke: pnpm-lock.yaml must resolve one coherent verified DSH graph')
   }
   const declaredDshNames = new Set(['peerDependencies', 'devDependencies']
     .flatMap((section) => Object.keys(manifest[section] ?? {}))
@@ -102,7 +101,7 @@ try {
   }
   const stale = [...declaredDshNames]
     .filter((name) => !highestDeclaredDshVersions.has(name)
-      || semver.lt(highestDeclaredDshVersions.get(name), DSH_BASELINE))
+      || highestDeclaredDshVersions.get(name) !== DSH_VERIFY_VERSION)
   if (stale.length > 0) {
     throw new Error(`package smoke: pnpm-lock.yaml resolves DSH below ${DSH_BASELINE}: ${stale.join(', ')}`)
   }
