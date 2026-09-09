@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { en, type SettingsKey } from '../src/client/locales.ts'
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import { SettingsRoot } from '../src/client/SettingsRoot.tsx'
@@ -57,14 +58,7 @@ describe('SettingsRoot with icon enhancement', () => {
           byId: { existing: { blank: false } },
         }),
         renderSlot,
-        t: (key: string) => ({
-          'connection.error': 'Disconnected',
-          'connection.retry': 'Reconnect now',
-          'connection.connecting': 'Connecting',
-          'connection.connected': 'Connected',
-          'connection.reconnect': 'Disconnected, reconnect now',
-          'connection.restart': 'Connecting, restart now',
-        })[key] ?? key,
+        t: (key: string) => en[key as SettingsKey] ?? key,
       },
       reconnect,
       renderSlot,
@@ -149,6 +143,7 @@ describe('SettingsRoot with icon enhancement', () => {
       const { rerender } = render(<SettingsRoot {...connecting} />)
 
       expect(screen.getByTestId('connection-indicator').dataset['state']).toBe('connecting')
+      expect(screen.getByRole('button', { name: /Reconnecting automatically/ })).toBeDefined()
       rerender(<SettingsRoot {...connected} />)
       expect(screen.getByTestId('connection-indicator').dataset['state']).toBe('recovered')
 
