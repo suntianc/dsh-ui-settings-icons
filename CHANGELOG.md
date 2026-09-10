@@ -1,8 +1,9 @@
 # Changelog
 
-## [Unreleased]
+## [0.1.3-rc.1] - 2026-09-10
 
-- Moves the development baseline to DSH `0.1.5-alpha.1` and aligns the English and Chinese automatic reconnection labels with the upstream settings shell. Icon slots, dialog shortcuts, focus restoration, and manual reconnect remain available.
+- Targets DSH `0.1.5-rc.1` and synchronizes the upstream localized accessible name for the settings trigger, including icon-only compact mode. English and Chinese regression tests preserve dialog activation and focus restoration.
+- Moves the development baseline to DSH `0.1.5-rc.1` and aligns the English and Chinese automatic reconnection labels with the upstream settings shell. Icon slots, dialog shortcuts, focus restoration, and manual reconnect remain available.
 
 ## [0.1.3-alpha.6] - 2026-09-07
 

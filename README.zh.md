@@ -1,19 +1,21 @@
 # dsh-ui-settings-icons
 
-> **DSH 兼容性（未发布的开发版本）：** 当前检出版本以 `0.1.5-alpha.1` 为开发与最低支持基线，依赖图必须保持一致。已发布的 alpha.6 不包含本次适配；旧 DSH 用户继续使用旧插件版本。见[验证说明](docs/dsh-source-verification.md)。
+> **DSH 兼容性：** `0.1.3-rc.1` 以 DSH `0.1.5-rc.1` 为开发与最低支持基线，依赖图必须保持一致。旧 DSH 用户请使用兼容的旧插件版本。见[验证说明](docs/dsh-source-verification.md)。
 
 [![npm version](https://img.shields.io/npm/v/dsh-ui-settings-icons.svg)](https://www.npmjs.com/package/dsh-ui-settings-icons)
 [![awesome · DSH plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com)
 
 [English](README.md) | 中文
 
-最近已发布版本：**v0.1.3-alpha.6**（适用于旧 DSH；本次适配尚未发布）。
+发布版本：**v0.1.3-rc.1**（npm 标签：`rc`）。
 
 这是一个自包含的 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 界面扩展插件。它为 DSH 的设置导航侧边栏增加了自定义图标能力，开放了全新的 keyed 图标槽位（`settings.section.icon`）供第三方插件使用，并为常见的扩展包内置了精美矢量图标预设。
 
-## 未发布：DSH 0.1.5 适配
+## 0.1.3-rc.1：DSH 0.1.5-rc.1 适配
 
-开发基线升级到 DSH `0.1.5-alpha.1`，中英文自动重连文案与上游设置外壳对齐。图标槽位、对话框快捷键、焦点恢复与手动重连行为继续保留。
+适配 DSH `0.1.5-rc.1`，同步上游设置按钮的本地化无障碍名称，包括仅显示图标的紧凑模式；中英文回归测试覆盖打开对话框与焦点恢复。
+
+开发基线升级到 DSH `0.1.5-rc.1`，中英文自动重连文案与上游设置外壳对齐。图标槽位、对话框快捷键、焦点恢复与手动重连行为继续保留。
 
 ## 功能
 
@@ -72,30 +74,22 @@ export function apply(ctx: Context): void {
 
 ## 环境要求
 
-- DeepSeek Harness `0.1.5-alpha.1`（统一依赖图）。
+- DeepSeek Harness `0.1.5-rc.1`（统一依赖图）。
 - Node.js `^22.19.0` 或 `>=24.0.0`。
 
 插件 `0.1.2` 及更早版本面向已退役的 DSH `0.1.1-rc.1` 客户端拓扑，无法在 `0.1.2-alpha.5` 上加载。
 
-## 安装本次开发适配
+## 安装
 
-本次改动尚未发布到 npm，不能通过安装已发布的 `0.1.3-alpha.6` 获得。在本插件检出目录构建并打包：
-
-```sh
-pnpm install --frozen-lockfile
-pnpm run check
-npm pack
-```
-
-先停止 `dsh web`，将目标 Host 升级到 DSH `0.1.5-alpha.1`，再将上一步实际生成的本地制品安装到需要升级的 profile：
+先停止 `dsh web`，确认目标 Host 使用统一的 DSH `0.1.5-rc.1` 依赖图，再安装准确的预发布版本到目标 profile：
 
 ```sh
 dsh --version
-dsh plugin --profile web add ./dsh-ui-settings-icons-0.1.3-alpha.6.tgz
+dsh plugin --profile web add dsh-ui-settings-icons@0.1.3-rc.1
 dsh plugin --profile web list
 ```
 
-核对条目后重启 `dsh web` 并刷新浏览器。后续正式发布版本应使用其准确版本号；本次开发适配没有发布、修改现用 profile 或升级全局 DSH。旧 DSH 安装继续使用 [alpha.6 发布记录](https://github.com/suntianc/dsh-ui-settings-icons/releases)。
+核对条目后重启 `dsh web` 并刷新浏览器。此版本通过 npm 的 `rc` 标签发布；不指定版本或标签会使用 `latest`，它不包含本次 RC1 适配。旧 DSH Host 应保留兼容的旧插件版本。
 
 ## Host 配置
 

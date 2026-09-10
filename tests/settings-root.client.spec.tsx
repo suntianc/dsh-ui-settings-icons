@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { en, type SettingsKey } from '../src/client/locales.ts'
+import { en, zh, type SettingsKey } from '../src/client/locales.ts'
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import { SettingsRoot } from '../src/client/SettingsRoot.tsx'
@@ -69,7 +69,7 @@ describe('SettingsRoot with icon enhancement', () => {
     const { props } = createProps()
     render(<SettingsRoot {...props} />)
 
-    const trigger = screen.getByRole('button', { name: /settings trigger/i })
+    const trigger = screen.getByRole('button', { name: en.trigger })
     expect(trigger).toBeDefined()
 
     expect(screen.queryByRole('dialog')).toBeNull()
@@ -77,12 +77,28 @@ describe('SettingsRoot with icon enhancement', () => {
     expect(screen.getByRole('dialog')).toBeDefined()
   })
 
+  it.each([en, zh])('names the icon-only compact trigger using the shell locale', dictionary => {
+    const { props } = createProps()
+    render(<SettingsRoot
+      {...props}
+      wide={false}
+      t={key => dictionary[key as SettingsKey] ?? key}
+      renderSlot={() => <svg aria-hidden="true" />}
+    />)
+
+    const trigger = screen.getByRole('button', { name: dictionary.trigger })
+    fireEvent.click(trigger)
+    expect(screen.getByRole('dialog')).toBeDefined()
+    fireEvent.keyDown(document, { key: 'Escape' })
+    expect(document.activeElement).toBe(trigger)
+  })
+
   it('renders custom third-party icons from settings.section.icon when registered', () => {
     const { props } = createProps({
       'custom-plugin': () => <CustomCustomIcon />,
     })
     render(<SettingsRoot {...props} />)
-    fireEvent.click(screen.getByRole('button', { name: /settings trigger/i }))
+    fireEvent.click(screen.getByRole('button', { name: en.trigger }))
 
     expect(screen.getByTestId('custom-third-party-icon')).toBeDefined()
   })
@@ -90,7 +106,7 @@ describe('SettingsRoot with icon enhancement', () => {
   it('renders built-in fallback preset icons for codex-auth and antigravity-auth', () => {
     const { props } = createProps()
     const { container } = render(<SettingsRoot {...props} />)
-    fireEvent.click(screen.getByRole('button', { name: /settings trigger/i }))
+    fireEvent.click(screen.getByRole('button', { name: en.trigger }))
 
     const navButtons = screen.getAllByRole('button').filter(b => b.className.includes('navCell'))
     expect(navButtons).toHaveLength(5)
@@ -103,7 +119,7 @@ describe('SettingsRoot with icon enhancement', () => {
   it('allows switching sections and pressing Escape to close', () => {
     const { props } = createProps()
     render(<SettingsRoot {...props} />)
-    fireEvent.click(screen.getByRole('button', { name: /settings trigger/i }))
+    fireEvent.click(screen.getByRole('button', { name: en.trigger }))
 
     expect(screen.getByTestId('section-body-general')).toBeDefined()
 
@@ -118,7 +134,7 @@ describe('SettingsRoot with icon enhancement', () => {
   it('restores focus to the settings trigger after the dialog closes', () => {
     const { props } = createProps()
     render(<SettingsRoot {...props} />)
-    const trigger = screen.getByRole('button', { name: /settings trigger/i })
+    const trigger = screen.getByRole('button', { name: en.trigger })
 
     fireEvent.click(trigger)
     fireEvent.keyDown(document, { key: 'Escape' })

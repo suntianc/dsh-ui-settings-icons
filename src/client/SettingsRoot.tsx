@@ -203,6 +203,7 @@ export function SettingsRoot(props: EnhancedSettingsRootProps): ReactElement {
           ref={triggerButton}
           type="button"
           className={clsx(styles.trigger, !wide && styles.rail)}
+          aria-label={t('trigger')}
           aria-haspopup="dialog"
           aria-expanded={open}
           onClick={() => { setOpen(true) }}

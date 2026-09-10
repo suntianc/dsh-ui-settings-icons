@@ -1,19 +1,21 @@
 # dsh-ui-settings-icons
 
-> **DSH compatibility (unreleased development):** This checkout targets `0.1.5-alpha.1` as its development and minimum supported baseline, with a coherent dependency graph. Published alpha.6 packages do not include this adaptation; keep older plugin releases for older DSH Hosts. See [verification](docs/dsh-source-verification.md).
+> **DSH compatibility:** `0.1.3-rc.1` targets DSH `0.1.5-rc.1` as its development and minimum supported baseline, with a coherent dependency graph. Keep compatible older plugin releases for older DSH Hosts. See [verification](docs/dsh-source-verification.md).
 
 [![npm version](https://img.shields.io/npm/v/dsh-ui-settings-icons.svg)](https://www.npmjs.com/package/dsh-ui-settings-icons)
 [![awesome · DSH plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com)
 
 English | [中文](README.zh.md)
 
-Latest published release: **v0.1.3-alpha.6** (for older DSH; this adaptation is not published).
+Release: **v0.1.3-rc.1** (npm tag: `rc`).
 
 A self-contained [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) UI plugin that enhances the DSH Settings navigation sidebar with custom icon support. It opens a new keyed slot (`settings.section.icon`) for third-party plugins while providing built-in vector icons for known capability packages.
 
-## Unreleased: DSH 0.1.5 adaptation
+## 0.1.3-rc.1: DSH 0.1.5-rc.1 adaptation
 
-Moves the development baseline to DSH `0.1.5-alpha.1` and aligns the English and Chinese automatic reconnection labels with the upstream settings shell. Icon slots, dialog shortcuts, focus restoration, and manual reconnect remain available.
+Targets DSH `0.1.5-rc.1` and synchronizes the upstream localized accessible name for the settings trigger, including icon-only compact mode. English and Chinese regression tests preserve dialog activation and focus restoration.
+
+Moves the development baseline to DSH `0.1.5-rc.1` and aligns the English and Chinese automatic reconnection labels with the upstream settings shell. Icon slots, dialog shortcuts, focus restoration, and manual reconnect remain available.
 
 ## Features
 
@@ -72,30 +74,22 @@ export function apply(ctx: Context): void {
 
 ## Requirements
 
-- DeepSeek Harness `0.1.5-alpha.1` (tested coherent dependency graph).
+- DeepSeek Harness `0.1.5-rc.1` (tested coherent dependency graph).
 - Node.js `^22.19.0` or `>=24.0.0`.
 
 Plugin versions through `0.1.2` target the retired DSH `0.1.1-rc.1` client topology and do not load on `0.1.2-alpha.5`.
 
-## Install this development adaptation
+## Install
 
-This change is not published to npm; installing the published `0.1.3-alpha.6` does not obtain it. Build and pack from this plugin checkout:
-
-```sh
-pnpm install --frozen-lockfile
-pnpm run check
-npm pack
-```
-
-Stop `dsh web`, upgrade the target Host to DSH `0.1.5-alpha.1`, then install the local artifact produced above into the profile you intend to upgrade:
+Stop `dsh web`, ensure the target Host uses a coherent DSH `0.1.5-rc.1` graph, then install the exact prerelease into the intended profile:
 
 ```sh
 dsh --version
-dsh plugin --profile web add ./dsh-ui-settings-icons-0.1.3-alpha.6.tgz
+dsh plugin --profile web add dsh-ui-settings-icons@0.1.3-rc.1
 dsh plugin --profile web list
 ```
 
-Verify the entry, restart `dsh web`, and refresh the browser. Use the exact new version after a formal release. This development adaptation does not itself publish, edit a live profile, or upgrade global DSH. Older DSH installations can retain the [alpha.6 release](https://github.com/suntianc/dsh-ui-settings-icons/releases).
+Verify the entry, restart `dsh web`, and refresh the browser. This version uses the npm `rc` tag. An install without a version or tag selects `latest`, which does not include this RC1 adaptation. Older DSH Hosts should retain a compatible older plugin release.
 
 ## Host configuration
 
