@@ -1,15 +1,19 @@
 # dsh-ui-settings-icons
 
-> **DSH compatibility:** `0.1.3-rc.1` targets DSH `0.1.5-rc.1` as its development and minimum supported baseline, with a coherent dependency graph. Keep compatible older plugin releases for older DSH Hosts. See [verification](docs/dsh-source-verification.md).
+> **DSH compatibility:** `0.1.3-rc.2` targets DSH `0.2.0-rc.1` as its minimum and tested development baseline. Use compatible older plugin versions for older DSH Hosts. See [verification](docs/dsh-source-verification.md).
 
 [![npm version](https://img.shields.io/npm/v/dsh-ui-settings-icons.svg)](https://www.npmjs.com/package/dsh-ui-settings-icons)
 [![awesome · DSH plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com)
 
 English | [中文](README.zh.md)
 
-Release: **v0.1.3-rc.1** (npm tag: `rc`).
+Release: **v0.1.3-rc.2** (npm tag: `rc`).
 
 A self-contained [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) UI plugin that enhances the DSH Settings navigation sidebar with custom icon support. It opens a new keyed slot (`settings.section.icon`) for third-party plugins while providing built-in vector icons for known capability packages.
+
+## 0.1.3-rc.2: DSH 0.2.0-rc.1 adaptation
+
+This release updates the DSH dependency graph and follows the 0.2 settings shell: Config Forms, the shared settings shortcut, launcher slot, modal layer, onboarding ownership, desktop update status, and General rows. The replacement Host entry uses `ui-settings-general` so the stock welcome notice can keep its acknowledgement. The keyed icon slot remains available. Complete package and tagged-source checks pass; a live Web/Desktop profile has not been tested.
 
 ## 0.1.3-rc.1: DSH 0.1.5-rc.1 adaptation
 
@@ -74,22 +78,22 @@ export function apply(ctx: Context): void {
 
 ## Requirements
 
-- DeepSeek Harness `0.1.5-rc.1` (tested coherent dependency graph).
+- DeepSeek Harness `0.2.0-rc.1` (tested coherent dependency graph).
 - Node.js `^22.19.0` or `>=24.0.0`.
 
 Plugin versions through `0.1.2` target the retired DSH `0.1.1-rc.1` client topology and do not load on `0.1.2-alpha.5`.
 
 ## Install
 
-Stop `dsh web`, ensure the target Host uses a coherent DSH `0.1.5-rc.1` graph, then install the exact prerelease into the intended profile:
+Stop `dsh web`, ensure the target Host uses a coherent DSH `0.2.0-rc.1` graph, then install this exact prerelease into the intended profile:
 
 ```sh
 dsh --version
-dsh plugin --profile web add dsh-ui-settings-icons@0.1.3-rc.1
+dsh plugin --profile web add dsh-ui-settings-icons@0.1.3-rc.2
 dsh plugin --profile web list
 ```
 
-Verify the entry, restart `dsh web`, and refresh the browser. This version uses the npm `rc` tag. An install without a version or tag selects `latest`, which does not include this RC1 adaptation. Older DSH Hosts should retain a compatible older plugin release.
+Verify the entry, restart `dsh web`, and refresh the browser. This version uses the npm `rc` tag. An install without a version or tag selects `latest`, which does not include this DSH 0.2 adaptation. Older DSH Hosts should retain a compatible older plugin release.
 
 ## Host configuration
 

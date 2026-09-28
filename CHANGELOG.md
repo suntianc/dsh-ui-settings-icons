@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.3-rc.2] - 2026-09-28
+
+- Align the plugin with DSH `0.2.0-rc.1`, including Config Forms, shared settings shortcut, launcher slot, modal layer, onboarding, desktop update status, and General rows.
+- Keep the replacement Host entry at `ui-settings-general` so the stock welcome notice can persist its acknowledgement while preserving the keyed icon slot.
+- Verify the complete package, source-artifact graph, and composed patch; a live Web/Desktop profile remains unverified.
+
 ## [0.1.3-rc.1] - 2026-09-10
 
 - Targets DSH `0.1.5-rc.1` and synchronizes the upstream localized accessible name for the settings trigger, including icon-only compact mode. English and Chinese regression tests preserve dialog activation and focus restoration.

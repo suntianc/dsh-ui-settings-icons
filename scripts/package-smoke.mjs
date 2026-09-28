@@ -7,8 +7,8 @@ import { pathToFileURL } from 'node:url'
 import semver from 'semver'
 import { DSH_BASELINE, DSH_SOURCE_VERSION, DSH_PEER_RANGE, DSH_VERIFY_VERSION, resolvedDshPackages } from './dsh-compatibility.mjs'
 
-const CORDIS_BASELINE = '4.0.2'
-const SCHEMASTERY_BASELINE = '3.18.2'
+const CORDIS_BASELINE = '4.0.4'
+const SCHEMASTERY_BASELINE = '3.18.4'
 const RETIRED_DSH_PACKAGES = new Set(['@deepseek-ai/dsh-client-runtime'])
 const DSH_WEB_MODULE_TABLE = new Set([
   'react',
@@ -141,6 +141,7 @@ try {
     '@deepseek-ai/dsh-client-store',
     'sidebar.settings',
     'settings.section.icon',
+    'settings.launcher',
   ]) {
     if (!client.includes(marker)) throw new Error(`package smoke: client bundle lacks ${marker}`)
   }
@@ -149,8 +150,8 @@ try {
   }
 
   const patch = await readFile(resolve(packageRoot, manifest.dsh?.bundle?.patch ?? ''), 'utf8')
-  if (!patch.includes("name: 'dsh-ui-settings-icons'")) {
-    throw new Error('package smoke: patch lacks dsh-ui-settings-icons')
+  if (!/- id: ui-settings-general\s+disabled: true[\s\S]*- id: ui-settings-general\s+name: 'dsh-ui-settings-icons'/u.test(patch)) {
+    throw new Error('package smoke: replacement settings entry must preserve the welcome notice namespace')
   }
 
   console.log(`package smoke: ${filename} exposes Host, client, types, and bundle patch`)

@@ -1,20 +1,22 @@
 import type { Context } from '@deepseek-ai/cordis'
 import { describe, expect, it, vi } from 'vitest'
-import { apply } from '../src/index.ts'
+import { apply, Config } from '../src/index.ts'
 
 describe('dsh-ui-settings-icons Host apply', () => {
-  it('registers the onboarding namespace through the current settings contract', () => {
-    const register = vi.fn()
+  it('hides the shell preference from automatic settings forms', () => {
+    const configure = vi.fn(() => vi.fn())
+    const effect = vi.fn((callback: () => unknown) => callback())
     const ctx = {
+      fiber: {},
       inject(dependencies: string[], activate: (settingsCtx: unknown) => void) {
         expect(dependencies).toEqual(['settings'])
-        activate({ settings: { register } })
+        activate({ settings: { configure }, effect })
       },
     }
 
     apply(ctx as unknown as Context)
 
-    expect(register).toHaveBeenCalledOnce()
-    expect(register.mock.calls[0]?.[0]).toBe('ui-onboarding')
+    expect(Config).toBeDefined()
+    expect(configure).toHaveBeenCalledWith({ auto: false }, ctx.fiber)
   })
 })

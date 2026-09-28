@@ -26,6 +26,26 @@
   display: flex;
 }
 
+.generalRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 50px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--dsw-alias-border-subtle);
+}
+
+.generalRow p { margin: 4px 0 0; font-size: 12px; }
+
+.updateBadge {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--dsw-alias-interactive-text-primary);
+}
+
 .section > [data-slot="settings.general.item"] > :last-child {
   border-bottom: none;
 }

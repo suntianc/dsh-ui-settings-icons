@@ -14,6 +14,7 @@ function bench(isLoopback = true) {
   const localeSubscriptions = new Set<() => void>()
   const dictionaries = new Map<string, any>()
   const reconnect = vi.fn()
+  const registerShortcut = vi.fn((_command: unknown) => () => {})
   const connectionState = {
     getSnapshot: () => 'connected',
     subscribe: () => () => {},
@@ -47,12 +48,16 @@ function bench(isLoopback = true) {
         openSettingsDocument: vi.fn(async () => ({ ok: true })),
       },
     },
-    settingsScope: {
+    configForms: {
       describe: () => ({
         getSnapshot: () => ({ view: { hasDocument: true }, error: null }),
         subscribe: () => () => {},
         ensure: async () => {},
       }),
+    },
+    shortcuts: {
+      catalog: { getSnapshot: () => [], subscribe: () => () => {} },
+      register: registerShortcut,
     },
     slots: {
       inject(_name: string, register: () => () => void) {
@@ -109,6 +114,7 @@ function bench(isLoopback = true) {
     slotSubscriptions,
     localeSubscriptions,
     reconnect,
+    registerShortcut,
     connectionState,
     mutateSections(newSections: typeof registeredSections) {
       registeredSections = newSections
@@ -127,7 +133,8 @@ describe('dsh-ui-settings-icons client apply', () => {
       'connection',
       'remote',
       'remote.settings',
-      'settingsScope',
+      'configForms',
+      'shortcuts',
     ])
   })
 
@@ -155,6 +162,7 @@ describe('dsh-ui-settings-icons client apply', () => {
     const children = sidebarSlot?.options['children'] as Record<string, { kind: string; scope: string }>
     expect(children).toBeDefined()
     expect(children['settings.section.icon']).toEqual({ kind: 'keyed', scope: 'root' })
+    expect(children['settings.launcher']).toEqual({ kind: 'single', scope: 'root' })
     expect(children['settings.section']).toEqual({ kind: 'list', scope: 'root' })
     expect(children['settings.trigger']).toEqual({ kind: 'single', scope: 'root' })
     expect(children['settings.header']).toEqual({ kind: 'single', scope: 'root' })
@@ -168,6 +176,22 @@ describe('dsh-ui-settings-icons client apply', () => {
     b.dispose()
     expect(b.slots).toHaveLength(0)
     expect(b.dictionaries.size).toBe(0)
+  })
+
+  it('opens the same settings state from the registered shortcut', () => {
+    const b = bench()
+    const sidebar = b.slots.find((slot) => slot.options['name'] === 'sidebar.settings')
+    const injected = (sidebar?.options['inject'] as (() => any))()
+    const command = b.registerShortcut.mock.calls[0]?.[0] as any
+    expect(command.id).toBe('settings.open')
+    expect(injected.hooks.shellState.getSnapshot().open).toBe(false)
+    const resolved = command.resolve({ modal: null })
+    expect(resolved.status).toBe('handled')
+    resolved.run()
+    expect(injected.hooks.shellState.getSnapshot().open).toBe(true)
+    injected.actions.close()
+    expect(injected.hooks.shellState.getSnapshot().open).toBe(false)
+    b.dispose()
   })
 
   it('omits the native settings-document action outside loopback', () => {

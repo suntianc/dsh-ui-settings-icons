@@ -1,9 +1,9 @@
 import type { ReactElement } from 'react'
 import {
-  IconAgentPresetOutline16,
-  IconDataOutline16,
-  IconPersonalizationOutline16,
-  IconSettingsOutline16,
+  IconAgentPresetOutlineMedium,
+  IconDataOutlineMedium,
+  IconPersonalizationOutlineMedium,
+  IconSettingsOutlineMedium,
 } from '@deepseek-ai/dsh-client-ui-primitives'
 import { OpenAIIcon } from './OpenAIIcon.tsx'
 import { AntigravityIcon } from './AntigravityIcon.tsx'
@@ -20,13 +20,13 @@ export function getDefaultNavIcon(id: string, className?: string | undefined): R
     return <AntigravityIcon {...iconProps} />
   }
   if (id === 'models') {
-    return <IconDataOutline16 {...iconProps} />
+    return <IconDataOutlineMedium {...iconProps} />
   }
   if (id === 'agent-presets') {
-    return <IconAgentPresetOutline16 {...iconProps} />
+    return <IconAgentPresetOutlineMedium {...iconProps} />
   }
   if (id === 'plugins') {
-    return <IconPersonalizationOutline16 {...iconProps} />
+    return <IconPersonalizationOutlineMedium {...iconProps} />
   }
-  return <IconSettingsOutline16 {...iconProps} />
+  return <IconSettingsOutlineMedium {...iconProps} />
 }

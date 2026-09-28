@@ -42,7 +42,7 @@ describe('SettingsRoot with icon enhancement', () => {
       if (name === 'settings.section') {
         return <div data-testid={`section-body-${opts?.only}`}>Body for {opts?.only}</div>
       }
-      return null
+      return opts?.fallback ?? null
     })
 
     return {
@@ -83,7 +83,8 @@ describe('SettingsRoot with icon enhancement', () => {
       {...props}
       wide={false}
       t={key => dictionary[key as SettingsKey] ?? key}
-      renderSlot={() => <svg aria-hidden="true" />}
+      renderSlot={(name: string, _owner: unknown, options?: { fallback?: ReactNode }) =>
+        name === 'settings.launcher' ? options?.fallback : <svg aria-hidden="true" />}
     />)
 
     const trigger = screen.getByRole('button', { name: dictionary.trigger })
@@ -105,14 +106,14 @@ describe('SettingsRoot with icon enhancement', () => {
 
   it('renders built-in fallback preset icons for codex-auth and antigravity-auth', () => {
     const { props } = createProps()
-    const { container } = render(<SettingsRoot {...props} />)
+    render(<SettingsRoot {...props} />)
     fireEvent.click(screen.getByRole('button', { name: en.trigger }))
 
     const navButtons = screen.getAllByRole('button').filter(b => b.className.includes('navCell'))
     expect(navButtons).toHaveLength(5)
 
     // Verify sections have icons rendered (svg elements)
-    const svgs = container.querySelectorAll('svg')
+    const svgs = document.body.querySelectorAll('svg')
     expect(svgs.length).toBeGreaterThanOrEqual(2)
   })
 
@@ -161,6 +162,9 @@ describe('SettingsRoot with icon enhancement', () => {
       expect(screen.getByTestId('connection-indicator').dataset['state']).toBe('connecting')
       expect(screen.getByRole('button', { name: /Reconnecting automatically/ })).toBeDefined()
       rerender(<SettingsRoot {...connected} />)
+      expect(screen.getByTestId('connection-indicator').dataset['state']).toBe('connecting')
+
+      act(() => { vi.advanceTimersByTime(800) })
       expect(screen.getByTestId('connection-indicator').dataset['state']).toBe('recovered')
 
       act(() => { vi.advanceTimersByTime(2_000) })

@@ -1,15 +1,19 @@
 # dsh-ui-settings-icons
 
-> **DSH 兼容性：** `0.1.3-rc.1` 以 DSH `0.1.5-rc.1` 为开发与最低支持基线，依赖图必须保持一致。旧 DSH 用户请使用兼容的旧插件版本。见[验证说明](docs/dsh-source-verification.md)。
+> **DSH 兼容性：** `0.1.3-rc.2` 以 DSH `0.2.0-rc.1` 为最低且已测试的开发基线；旧版 DSH 请使用兼容的插件版本。见[验证说明](docs/dsh-source-verification.md)。
 
 [![npm version](https://img.shields.io/npm/v/dsh-ui-settings-icons.svg)](https://www.npmjs.com/package/dsh-ui-settings-icons)
 [![awesome · DSH plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com)
 
 [English](README.md) | 中文
 
-发布版本：**v0.1.3-rc.1**（npm 标签：`rc`）。
+发布版本：**v0.1.3-rc.2**（npm 标签：`rc`）。
 
 这是一个自包含的 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 界面扩展插件。它为 DSH 的设置导航侧边栏增加了自定义图标能力，开放了全新的 keyed 图标槽位（`settings.section.icon`）供第三方插件使用，并为常见的扩展包内置了精美矢量图标预设。
+
+## 0.1.3-rc.2：适配 DSH 0.2.0-rc.1
+
+此版本更新 DSH 依赖图，并跟随 0.2 版设置外壳的 Config Forms、共享快捷键、launcher 槽、模态层、引导状态、桌面更新提示与通用设置行。替代 Host 条目沿用 `ui-settings-general` ID，使内置欢迎说明继续保存确认状态；keyed 图标槽仍可使用。完整包检查与固定源码检查已通过，尚未验证真实 Web/Desktop profile。
 
 ## 0.1.3-rc.1：DSH 0.1.5-rc.1 适配
 
@@ -74,22 +78,22 @@ export function apply(ctx: Context): void {
 
 ## 环境要求
 
-- DeepSeek Harness `0.1.5-rc.1`（统一依赖图）。
+- DeepSeek Harness `0.2.0-rc.1`（统一依赖图）。
 - Node.js `^22.19.0` 或 `>=24.0.0`。
 
 插件 `0.1.2` 及更早版本面向已退役的 DSH `0.1.1-rc.1` 客户端拓扑，无法在 `0.1.2-alpha.5` 上加载。
 
 ## 安装
 
-先停止 `dsh web`，确认目标 Host 使用统一的 DSH `0.1.5-rc.1` 依赖图，再安装准确的预发布版本到目标 profile：
+先停止 `dsh web`，确认目标 Host 使用统一的 DSH `0.2.0-rc.1` 依赖图，再将此准确预发布版本安装到目标 profile：
 
 ```sh
 dsh --version
-dsh plugin --profile web add dsh-ui-settings-icons@0.1.3-rc.1
+dsh plugin --profile web add dsh-ui-settings-icons@0.1.3-rc.2
 dsh plugin --profile web list
 ```
 
-核对条目后重启 `dsh web` 并刷新浏览器。此版本通过 npm 的 `rc` 标签发布；不指定版本或标签会使用 `latest`，它不包含本次 RC1 适配。旧 DSH Host 应保留兼容的旧插件版本。
+核对条目后重启 `dsh web` 并刷新浏览器。此版本通过 npm 的 `rc` 标签发布；不指定版本或标签会使用 `latest`，它不包含本次 DSH 0.2 适配。旧 DSH Host 应保留兼容的旧插件版本。
 
 ## Host 配置
 

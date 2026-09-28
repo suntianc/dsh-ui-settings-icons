@@ -1,4 +1,4 @@
-import { createElement } from 'react'
+import { createElement, useEffect } from 'react'
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
 import { cleanup } from '@testing-library/react'
 import { afterEach, vi } from 'vitest'
@@ -16,6 +16,10 @@ vi.mock('@deepseek-ai/dsh-client-store', () => ({
     const listeners = new Set<() => void>()
     return {
       getSnapshot: () => state,
+      set: (next: any) => {
+        state = next
+        for (const fn of listeners) fn()
+      },
       update: (updater: (draft: any) => void) => {
         updater(state)
         for (const fn of listeners) fn()
@@ -29,12 +33,20 @@ vi.mock('@deepseek-ai/dsh-client-store', () => ({
 }))
 
 vi.mock('@deepseek-ai/dsh-client-ui-primitives', () => ({
+  Tooltip: ({ children }: { children: ReactNode }) => children,
+  useModalLayer: (_ref: unknown, _open: boolean, onClose: () => void) => {
+    useEffect(() => {
+      const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') onClose() }
+      document.addEventListener('keydown', onKey)
+      return () => { document.removeEventListener('keydown', onKey) }
+    }, [onClose])
+  },
+  closeTopModal: vi.fn(),
   Button: ({ children, icon, variant: _variant, ...props }: MockButtonProps) =>
     createElement('button', props, icon, children),
   ConnectionIndicator: ({
     state,
     disconnectedLabel,
-    reconnectLabel,
     connectingLabel,
     recoveredLabel,
     restartActionLabel,
@@ -42,7 +54,6 @@ vi.mock('@deepseek-ai/dsh-client-ui-primitives', () => ({
   }: {
     state?: 'disconnected' | 'connecting' | 'recovered'
     disconnectedLabel: string
-    reconnectLabel: string
     connectingLabel: string
     recoveredLabel: string
     restartActionLabel: string
@@ -61,18 +72,16 @@ vi.mock('@deepseek-ai/dsh-client-ui-primitives', () => ({
       'data-state': state,
       onClick: onReconnect,
     }, state === 'disconnected' ? disconnectedLabel : connectingLabel,
-    state === 'disconnected' ? reconnectLabel : restartActionLabel)
+    state === 'disconnected' ? disconnectedLabel : restartActionLabel)
   },
-  IconCloseOutline16: ({ className }: { className?: string; size?: number }) =>
+  IconCloseOutlineRegular: ({ className }: { className?: string; size?: number }) =>
     createElement('span', { 'aria-hidden': true, className, 'data-icon': 'close' }),
-  IconSettingsOutline16: ({ className }: { className?: string; size?: number }) =>
+  IconSettingsOutlineMedium: ({ className }: { className?: string; size?: number }) =>
     createElement('span', { 'aria-hidden': true, className, 'data-icon': 'settings' }),
-  IconSettingsOutline14: ({ className }: { className?: string; size?: number }) =>
-    createElement('span', { 'aria-hidden': true, className, 'data-icon': 'settings14' }),
-  IconDataOutline16: ({ className }: { className?: string; size?: number }) =>
+  IconDataOutlineMedium: ({ className }: { className?: string; size?: number }) =>
     createElement('span', { 'aria-hidden': true, className, 'data-icon': 'models' }),
-  IconAgentPresetOutline16: ({ className }: { className?: string; size?: number }) =>
+  IconAgentPresetOutlineMedium: ({ className }: { className?: string; size?: number }) =>
     createElement('span', { 'aria-hidden': true, className, 'data-icon': 'agent-presets' }),
-  IconPersonalizationOutline16: ({ className }: { className?: string; size?: number }) =>
+  IconPersonalizationOutlineMedium: ({ className }: { className?: string; size?: number }) =>
     createElement('span', { 'aria-hidden': true, className, 'data-icon': 'plugins' }),
 }))
