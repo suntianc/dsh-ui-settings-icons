@@ -1,6 +1,6 @@
 # dsh-ui-settings-icons
 
-> **DSH 兼容性：** `0.1.3-rc.2` 以 DSH `0.2.0-rc.1` 为最低且已测试的开发基线；旧版 DSH 请使用兼容的插件版本。见[验证说明](docs/dsh-source-verification.md)。
+> **未发布检出版本兼容性：** 当前检出版本以 DSH `0.2.0-rc.2` 为最低且已测试的开发基线；旧版 DSH 请使用兼容的插件版本。见[验证说明](docs/dsh-source-verification.md)。
 
 [![npm version](https://img.shields.io/npm/v/dsh-ui-settings-icons.svg)](https://www.npmjs.com/package/dsh-ui-settings-icons)
 [![awesome · DSH plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com)
@@ -10,6 +10,10 @@
 发布版本：**v0.1.3-rc.2**（npm 标签：`rc`）。
 
 这是一个自包含的 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 界面扩展插件。它为 DSH 的设置导航侧边栏增加了自定义图标能力，开放了全新的 keyed 图标槽位（`settings.section.icon`）供第三方插件使用，并为常见的扩展包内置了精美矢量图标预设。
+
+## 未发布：适配 DSH 0.2.0-rc.2
+
+同步上游 Windows/macOS Web 设置快捷键（`Mod+Alt+,`；Desktop 仍为 `Mod+,`）和中英文代码工作视图文案；增加图标别名、未知分区回退和继承主题颜色的 SVG 回归检查。依赖图、peer 最低版本、锁文件和固定源码验证已更新为 rc2。当前检出版本尚未发布；下方版本与 npm 安装示例描述的是之前兼容 rc1 的制品。自动检查不包含真实 Web/Desktop profile。
 
 ## 0.1.3-rc.2：适配 DSH 0.2.0-rc.1
 
@@ -35,7 +39,7 @@
   - **`codex-auth`** / **GPT Auth**（OpenAI / ChatGPT 官方徽标）
   - **`antigravity-auth`**（Google Antigravity / Gemini 星芒徽标）
   - DSH 原生分区：**`models`**、**`agent-presets`**、**`plugins`**
-- 当某个分区未提供自定义图标且不匹配任何预设时，自动回退到 DSH 标准齿轮图标（`IconSettingsOutline16`）。
+- 当某个分区未提供自定义图标且不匹配任何预设时，自动回退到 DSH 标准齿轮图标（`IconSettingsOutlineMedium`）。
 
 ### 完整的交互与无障碍对齐
 
@@ -78,7 +82,7 @@ export function apply(ctx: Context): void {
 
 ## 环境要求
 
-- DeepSeek Harness `0.2.0-rc.1`（统一依赖图）。
+- DeepSeek Harness `0.2.0-rc.2`（统一依赖图）。
 - Node.js `^22.19.0` 或 `>=24.0.0`。
 
 插件 `0.1.2` 及更早版本面向已退役的 DSH `0.1.1-rc.1` 客户端拓扑，无法在 `0.1.2-alpha.5` 上加载。

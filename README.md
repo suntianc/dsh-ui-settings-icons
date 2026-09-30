@@ -1,6 +1,6 @@
 # dsh-ui-settings-icons
 
-> **DSH compatibility:** `0.1.3-rc.2` targets DSH `0.2.0-rc.1` as its minimum and tested development baseline. Use compatible older plugin versions for older DSH Hosts. See [verification](docs/dsh-source-verification.md).
+> **Unreleased checkout compatibility:** This checkout targets DSH `0.2.0-rc.2` as its minimum and tested development baseline. Use compatible older plugin versions for older DSH Hosts. See [verification](docs/dsh-source-verification.md).
 
 [![npm version](https://img.shields.io/npm/v/dsh-ui-settings-icons.svg)](https://www.npmjs.com/package/dsh-ui-settings-icons)
 [![awesome · DSH plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com)
@@ -10,6 +10,10 @@ English | [中文](README.zh.md)
 Release: **v0.1.3-rc.2** (npm tag: `rc`).
 
 A self-contained [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) UI plugin that enhances the DSH Settings navigation sidebar with custom icon support. It opens a new keyed slot (`settings.section.icon`) for third-party plugins while providing built-in vector icons for known capability packages.
+
+## Unreleased: DSH 0.2.0-rc.2 adaptation
+
+Synchronizes the Windows/macOS Web settings shortcut with upstream (`Mod+Alt+,`; Desktop remains `Mod+,`) and the English/Chinese coding-view copy. Icon aliases, unknown-section fallback, and theme-inheriting SVGs are covered by regression tests. The dependency graph, peer minimum, lockfile, and tagged-source verification now target rc2. This checkout has not been published; the release and npm installation examples below describe the previous rc1-compatible artifact. Live Web/Desktop profiles are not part of the automated checks.
 
 ## 0.1.3-rc.2: DSH 0.2.0-rc.1 adaptation
 
@@ -35,7 +39,7 @@ Moves the development baseline to DSH `0.1.5-rc.1` and aligns the English and Ch
   - **`codex-auth`** / **GPT Auth** (OpenAI / ChatGPT logo)
   - **`antigravity-auth`** (Google Antigravity / Gemini spark logo)
   - Stock DSH sections: **`models`**, **`agent-presets`**, **`plugins`**
-- Gracefully falls back to DSH's standard gear icon (`IconSettingsOutline16`) when a section provides no custom icon and matches no preset.
+- Gracefully falls back to DSH's standard gear icon (`IconSettingsOutlineMedium`) when a section provides no custom icon and matches no preset.
 
 ### Full Chrome and Accessibility Parity
 
@@ -78,7 +82,7 @@ export function apply(ctx: Context): void {
 
 ## Requirements
 
-- DeepSeek Harness `0.2.0-rc.1` (tested coherent dependency graph).
+- DeepSeek Harness `0.2.0-rc.2` (tested coherent dependency graph).
 - Node.js `^22.19.0` or `>=24.0.0`.
 
 Plugin versions through `0.1.2` target the retired DSH `0.1.1-rc.1` client topology and do not load on `0.1.2-alpha.5`.

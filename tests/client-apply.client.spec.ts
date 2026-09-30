@@ -181,9 +181,18 @@ describe('dsh-ui-settings-icons client apply', () => {
   it('opens the same settings state from the registered shortcut', () => {
     const b = bench()
     const sidebar = b.slots.find((slot) => slot.options['name'] === 'sidebar.settings')
-    const injected = (sidebar?.options['inject'] as (() => any))()
+    if (sidebar === undefined) throw new Error('sidebar.settings was not registered')
+    const injected = (sidebar.options['inject'] as (() => any))()
     const command = b.registerShortcut.mock.calls[0]?.[0] as any
     expect(command.id).toBe('settings.open')
+    expect(command.defaults).toEqual({
+      'desktop:macos': { code: 'Comma', modifiers: ['primary'] },
+      'desktop:windows': { code: 'Comma', modifiers: ['primary'] },
+      'desktop:linux': { code: 'Comma', modifiers: ['primary'] },
+      'web:macos': { code: 'Comma', modifiers: ['primary', 'alt'] },
+      'web:windows': { code: 'Comma', modifiers: ['primary', 'alt'] },
+    })
+    expect(command.resolve({ modal: 'shortcuts' })).toEqual({ status: 'blocked', reason: 'modal' })
     expect(injected.hooks.shellState.getSnapshot().open).toBe(false)
     const resolved = command.resolve({ modal: null })
     expect(resolved.status).toBe('handled')

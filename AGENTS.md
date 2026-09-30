@@ -20,11 +20,11 @@ This file supplements the workspace-level `AGENTS.md`. The workspace guide remai
 
 ## Compatibility baseline
 
-- Target and test against DSH `0.2.0-rc.1`, Cordis `4.0.4`, and Schemastery `3.18.4` as one coherent dependency graph.
+- Target and test against DSH `0.2.0-rc.2`, Cordis `4.0.4`, and Schemastery `3.18.4` as one coherent dependency graph.
 - Client code uses Cordis `Context`; `@deepseek-ai/dsh-client-runtime` is retired and must not reappear.
 - Snapshot state uses the Web module-table surface `@deepseek-ai/dsh-client-store`, and settings document actions use `ctx.remote.settings.openSettingsDocument()`.
 - Keep the enhanced settings shell synchronized with the current `@deepseek-ai/dsh-client-ui-settings-general` behavior while adding only the keyed icon slot/navigation rendering delta.
 
 ## Matching source verification
 
-DSH `0.2.0-rc.1` at `4878cdabd87d4041bdaff61d04c966883b9fd07a` is the matching source target for the published npm baseline. Use the isolated workflow in `docs/dsh-source-verification.md`; run both `pnpm run check` and the source check when changing compatibility-sensitive behavior. Keep the complete dependency graph coherent. Older release graphs are historical evidence, not the current development baseline.
+DSH `0.2.0-rc.2` at `639ed015397290b3745d163aafe02ffee4aa3f84` is the matching source target for the published npm baseline. Use the isolated workflow in `docs/dsh-source-verification.md`; run both `pnpm run check` and the source check when changing compatibility-sensitive behavior. Keep the complete dependency graph coherent. Older release graphs are historical evidence, not the current development baseline.
