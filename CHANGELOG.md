@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Target DSH `0.2.0-rc.2` with coherent peers, exact development pins, lockfile, and official-source verification at `639ed015397290b3745d163aafe02ffee4aa3f84`.
+- Sync Web settings shortcut and bilingual coding-view copy; add icon alias/theme and modal-shortcut regressions.
+- No npm release or live profile change is included.
+
 ## [0.1.3-rc.2] - 2026-09-28
 
 - Align the plugin with DSH `0.2.0-rc.1`, including Config Forms, shared settings shortcut, launcher slot, modal layer, onboarding, desktop update status, and General rows.

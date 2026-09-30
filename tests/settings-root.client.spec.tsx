@@ -132,6 +132,23 @@ describe('SettingsRoot with icon enhancement', () => {
     expect(screen.queryByRole('dialog')).toBeNull()
   })
 
+  it('closes with the header action and reopens once with reset section selection', () => {
+    const { props } = createProps()
+    render(<SettingsRoot {...props} />)
+    const trigger = screen.getByRole('button', { name: en.trigger })
+    fireEvent.click(trigger)
+    fireEvent.click(trigger)
+    expect(screen.getAllByRole('dialog')).toHaveLength(1)
+    fireEvent.click(screen.getByText('GPT Auth'))
+    expect(screen.getByTestId('section-body-codex-auth')).toBeDefined()
+    fireEvent.click(screen.getByRole('button', { name: 'Close' }))
+    expect(screen.queryByRole('dialog')).toBeNull()
+    expect(document.activeElement).toBe(trigger)
+    fireEvent.click(trigger)
+    expect(screen.getByTestId('section-body-general')).toBeDefined()
+    expect(screen.queryByTestId('section-body-codex-auth')).toBeNull()
+  })
+
   it('restores focus to the settings trigger after the dialog closes', () => {
     const { props } = createProps()
     render(<SettingsRoot {...props} />)
@@ -179,5 +196,17 @@ describe('SettingsRoot with icon enhancement', () => {
     render(<SettingsRoot {...props} wide={false} />)
 
     expect(screen.queryByTestId('connection-indicator')).toBeNull()
+  })
+})
+
+
+describe('rc2 icon and settings variants', () => {
+
+
+  it('uses current rc2 coding-view labels in both locales', () => {
+    expect(en['developerTools.title']).toBe('Show coding view')
+    expect(en['developerTools.description']).toBe('Shows trajectory, code diffs, and all Agent presets')
+    expect(zh['developerTools.title']).toBe('显示代码工作视图')
+    expect(zh['developerTools.description']).toBe('开启后，显示轨迹、本轮代码差异，可选择完整的 Agent 预设切换')
   })
 })
