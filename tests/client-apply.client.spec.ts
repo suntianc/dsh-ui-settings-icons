@@ -55,6 +55,7 @@ function bench(isLoopback = true) {
         ensure: async () => {},
       }),
     },
+    modules: { entries: { dismissRelease: vi.fn(), releaseChange: { getSnapshot: () => undefined, subscribe: () => () => {} } } },
     shortcuts: {
       catalog: { getSnapshot: () => [], subscribe: () => () => {} },
       register: registerShortcut,
@@ -135,6 +136,7 @@ describe('dsh-ui-settings-icons client apply', () => {
       'remote.settings',
       'configForms',
       'shortcuts',
+      'modules',
     ])
   })
 
@@ -181,9 +183,14 @@ describe('dsh-ui-settings-icons client apply', () => {
   it('opens the same settings state from the registered shortcut', () => {
     const b = bench()
     const sidebar = b.slots.find((slot) => slot.options['name'] === 'sidebar.settings')
-    const injected = (sidebar?.options['inject'] as (() => any))()
+    if (sidebar === undefined) throw new Error('sidebar.settings was not registered')
+    const injected = (sidebar.options['inject'] as (() => any))()
     const command = b.registerShortcut.mock.calls[0]?.[0] as any
     expect(command.id).toBe('settings.open')
+    expect(command.defaults['web:macos'].modifiers).toEqual(['primary', 'alt'])
+    expect(command.defaults['web:windows'].modifiers).toEqual(['primary', 'alt'])
+    expect(command.defaults['desktop:macos'].modifiers).toEqual(['primary'])
+    expect(command.resolve({ modal: 'shortcuts' })).toEqual({ status: 'blocked', reason: 'modal' })
     expect(injected.hooks.shellState.getSnapshot().open).toBe(false)
     const resolved = command.resolve({ modal: null })
     expect(resolved.status).toBe('handled')

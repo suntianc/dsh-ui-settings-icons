@@ -1,6 +1,8 @@
 import type { ReactElement } from 'react'
 import {
   IconAgentPresetOutlineMedium,
+  IconArchiveOutlineMedium,
+  IconUserOutlineMedium,
   IconDataOutlineMedium,
   IconPersonalizationOutlineMedium,
   IconSettingsOutlineMedium,
@@ -19,6 +21,8 @@ export function getDefaultNavIcon(id: string, className?: string | undefined): R
   if (id === 'antigravity-auth' || id === 'antigravity' || id === 'gemini') {
     return <AntigravityIcon {...iconProps} />
   }
+  if (id === 'account') return <IconUserOutlineMedium {...iconProps} />
+  if (id === 'archived-sessions') return <IconArchiveOutlineMedium {...iconProps} />
   if (id === 'models') {
     return <IconDataOutlineMedium {...iconProps} />
   }

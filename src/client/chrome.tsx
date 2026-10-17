@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { ReactElement } from 'react'
+import type { WebBootGraph } from '@deepseek-ai/dsh-client-modules/client'
 import { Button, IconSettingsOutlineMedium, Switch } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { UpdateView } from './desktop-update.ts'
 import type { SettingsDocumentState, SettingsDocumentStore } from './settings-document-store.ts'
@@ -31,7 +32,9 @@ export function GeneralSection({ renderSlot }: { renderSlot: (key: string, owner
 }
 
 export function CurrentVersionRow({ t }: { t: (key: string) => string }): ReactElement | null {
-  const version = process.env.DSH_CLIENT_VERSION
+  // A separately published UI plugin has no DSH build-time process environment.
+  const carrier = globalThis as typeof globalThis & { __DSH_BOOT__?: Pick<WebBootGraph, 'release'> }
+  const version = carrier.__DSH_BOOT__?.release?.version
   return version === undefined ? null : <div className={styles.generalRow}>{t('general.currentVersion')}: {version}</div>
 }
 
