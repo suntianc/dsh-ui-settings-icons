@@ -5,11 +5,9 @@ import { access, mkdtemp, readFile, rm } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import semver from 'semver'
-import { DSH_BASELINE, DSH_SOURCE_VERSION, DSH_PEER_RANGE, DSH_VERIFY_VERSION, resolvedDshPackages } from './dsh-compatibility.mjs'
+import { DSH_BASELINE, DSH_SOURCE_VERSION, DSH_PEER_RANGE, DSH_VERIFY_VERSION, CORDIS_BASELINE, SCHEMASTERY_BASELINE, resolvedDshPackages } from './dsh-compatibility.mjs'
 
-const CORDIS_BASELINE = '4.0.4'
-const SCHEMASTERY_BASELINE = '3.18.4'
-const RETIRED_DSH_PACKAGES = new Set(['@deepseek-ai/dsh-client-runtime'])
+const RETIRED_DSH_PACKAGES = new Set(['@deepseek-ai/dsh-client-runtime', '@deepseek-ai/dsh-invariants'])
 const DSH_WEB_MODULE_TABLE = new Set([
   'react',
   'react/jsx-runtime',

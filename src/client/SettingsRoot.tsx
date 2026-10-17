@@ -65,13 +65,15 @@ function SettingsPanel({ rows, renderSlot, activeId, onSelect, onClose }: Settin
       <div className={styles.mask} aria-hidden="true" onClick={onClose} />
       <div
         ref={panel}
+        tabIndex={-1}
+        data-shortcut-modal="settings"
         className={styles.panel}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
       >
         <nav className={styles.nav}>
-          <div className={styles.navTitle} id={titleId}>
+          <div className={styles.navTitle} id={titleId} tabIndex={-1} data-modal-autofocus={active === undefined ? '' : undefined}>
             {renderSlot('settings.header', {})}
           </div>
           <div className={styles.navList}>

@@ -5,7 +5,7 @@ import { createHash } from 'node:crypto'
 import { cp, mkdir, mkdtemp, readFile, readdir, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { basename, join, resolve } from 'node:path'
-import { DSH_SOURCE_VERSION } from './dsh-compatibility.mjs'
+import { DSH_VERIFY_VERSION, DSH_SOURCE_COMMITS } from './dsh-compatibility.mjs'
 
 const sourceRoot = resolve(import.meta.dirname, '..')
 const args = process.argv.slice(2).filter(value => value !== '--')
@@ -18,7 +18,7 @@ for (const filename of (await readdir(packageDirectory)).filter(name => name.end
   const path = join(packageDirectory, filename)
   const manifest = JSON.parse(execFileSync('tar', ['-xOf', path, 'package/package.json'], { encoding: 'utf8' }))
   if (!manifest.name.startsWith('@deepseek-ai/')) continue
-  if (manifest.name.startsWith('@deepseek-ai/dsh-') && manifest.version !== DSH_SOURCE_VERSION) {
+  if (manifest.name.startsWith('@deepseek-ai/dsh-') && manifest.version !== DSH_VERIFY_VERSION) {
     throw new Error('Mixed source package version: ' + manifest.name + '@' + manifest.version)
   }
   if (packages.has(manifest.name)) throw new Error('Duplicate source package: ' + manifest.name)
@@ -73,12 +73,12 @@ if (/^overrides:/mu.test(workspace)) throw new Error('Source verification requir
 await writeFile(workspacePath, workspace + '\nautoInstallPeers: true\noverrides:\n'
   + Object.entries(overrides).map(([name, value]) => '  ' + JSON.stringify(name) + ': ' + JSON.stringify(value)).join('\n') + '\n')
 await writeFile(join(stage, 'artifacts.json'), JSON.stringify({
-  target: DSH_SOURCE_VERSION,
-  expectedSourceCommit: '4878cdabd87d4041bdaff61d04c966883b9fd07a',
+  target: DSH_VERIFY_VERSION,
+  expectedSourceCommit: DSH_SOURCE_COMMITS[DSH_VERIFY_VERSION],
   // The build recipe establishes provenance. These checksums identify the supplied bytes.
   packages: receipt,
 }, null, 2) + '\n')
-const env = { ...process.env, DSH_VERIFY_VERSION: DSH_SOURCE_VERSION }
+const env = { ...process.env, DSH_VERIFY_VERSION: DSH_VERIFY_VERSION }
 function run(args) {
   const result = spawnSync('pnpm', args, { cwd: checkout, env, stdio: 'inherit' })
   if (result.error) throw result.error

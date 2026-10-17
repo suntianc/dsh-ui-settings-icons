@@ -7,5 +7,6 @@ export default defineConfig({
     environment: 'jsdom',
     pool: 'forks',
     restoreMocks: true,
+    server: { deps: { inline: ['@deepseek-ai/dsh-client-ui-primitives'] } },
   },
 })

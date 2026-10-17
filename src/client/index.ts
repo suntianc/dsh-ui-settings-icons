@@ -2,7 +2,9 @@ import type { Context as ClientContext } from '@deepseek-ai/cordis'
 import type {} from '@deepseek-ai/dsh-api-remotes/client'
 import type {} from '@deepseek-ai/dsh-client-connection/client'
 import type {} from '@deepseek-ai/dsh-client-locale/client'
+import type {} from '@deepseek-ai/dsh-client-modules/client'
 import type {} from '@deepseek-ai/dsh-client-ui-renderer/client'
+import type {} from '@deepseek-ai/dsh-client-ui-layout/client'
 import type {} from '@deepseek-ai/dsh-client-ui-session/client'
 import type {} from '@deepseek-ai/dsh-client-ui-settings/client'
 import type {} from '@deepseek-ai/dsh-client-ui-sidebar/client'
@@ -15,6 +17,7 @@ import type { SettingsOnboardingStepRow, SettingsSectionRow } from './SettingsRo
 import { CloseLabel, CurrentVersionRow, DesktopUpdateBadge, DeveloperToolsRow, GeneralSection, HeaderContent, SettingsDocumentAction, TriggerContent } from './chrome.tsx'
 import { DesktopUpdateSource } from './desktop-update.ts'
 import { SettingsDocumentStore } from './settings-document-store.ts'
+import { HostReleasePrompt, type HostReleasePromptInjected } from './HostReleasePrompt.tsx'
 import { en, zh, type SettingsKey } from './locales.ts'
 
 export { SettingsRoot } from './SettingsRoot.tsx'
@@ -51,6 +54,7 @@ export const inject = [
   'remote.settings',
   'configForms',
   'shortcuts',
+  'modules',
 ]
 
 export function apply(ctx: ClientContext): void {
@@ -158,8 +162,8 @@ export function apply(ctx: ClientContext): void {
         'desktop:macos': { code: 'Comma', modifiers: ['primary'] },
         'desktop:windows': { code: 'Comma', modifiers: ['primary'] },
         'desktop:linux': { code: 'Comma', modifiers: ['primary'] },
-        'web:macos': { code: 'Comma', modifiers: ['primary'] },
-        'web:windows': { code: 'Comma', modifiers: ['primary'] },
+        'web:macos': { code: 'Comma', modifiers: ['primary', 'alt'] },
+        'web:windows': { code: 'Comma', modifiers: ['primary', 'alt'] },
       },
       regions: ['page', 'editable', 'terminal'],
       modals: ['settings'],
@@ -251,4 +255,13 @@ export function apply(ctx: ClientContext): void {
       },
     },
   }, GeneralSection as any))
+
+  const releasePromptInjected = (): HostReleasePromptInjected => ({
+    dismissRelease: () => { ctx.modules.entries.dismissRelease() },
+    reloadPage: () => { globalThis.location.reload() },
+    hooks: { releaseChange: ctx.modules.entries.releaseChange },
+  })
+  ctx.slots.inject('shell.overlay', () => ctx.slots.register({
+    name: 'shell.overlay', id: 'host-release-change', locale: NS, inject: releasePromptInjected,
+  }, HostReleasePrompt))
 }

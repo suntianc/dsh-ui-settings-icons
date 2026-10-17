@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.1.4-rc.1] - 2026-10-17
+
+- Target DSH `0.2.1-rc.1` / `0.2.1-rc.2` explicitly with the coherent rc.2 development graph (Cordis 4.0.5, Schemastery 3.18.5).
+- Read the running Host version from `__DSH_BOOT__.release` instead of the browser-undefined Node `process` global.
+- Preserve the Host version-change refresh prompt, account/archive icons, Web/desktop shortcuts, modal classification and scrollable settings navigation; retain the keyed icon slot.
+- Exercise real Loader/Include/boot-graph and SlotCore/Renderer behavior, exact OpenAI SVG, keyed overrides, unload/reload and emitted browser artifact.
+- Desktop evidence: the existing npm package recovered icons after cold restart; official uninstall/reinstall contrast and stock-setting persistence were verified on macOS Desktop 0.2.1-rc.2/build 332895e. The candidate's OpenAI icon and version row rendered in isolated Chrome. Full native candidate/updater parity is not claimed.
+- Known limitation accepted for this prerelease: Web welcome acknowledgement has a duplicate-ID/configuration-overlay conflict and did not pass acceptance. An authentication cause was not established. Desktop does not register that Web step.
+- Known Host lifecycle limitation: installing/enabling/disabling/removing this replacement requires full Host restart and client refresh. Ordinary checks explicitly skip two opt-in hot-swap failures and the separately run production-artifact test; no Loader or configuration-protection patch is shipped.
+
 ## [0.1.3-rc.2] - 2026-09-28
 
 - Align the plugin with DSH `0.2.0-rc.1`, including Config Forms, shared settings shortcut, launcher slot, modal layer, onboarding, desktop update status, and General rows.

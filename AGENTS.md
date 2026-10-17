@@ -16,15 +16,17 @@ This file supplements the workspace-level `AGENTS.md`. The workspace guide remai
 - Shadows `sidebar.settings` with a higher priority (`priority: -1`)
 - Declares the `settings.section.icon` keyed slot to allow third-party plugins to provide custom icons for their `settings.section` entries
 - Provides built-in icon fallbacks for well-known plugins (such as `codex-auth`, `antigravity-auth`)
-- Preserves 100% of standard DSH settings shell behaviors (trigger button, connection recovery, header actions, close button, sections rendering, onboarding steps, modal shortcuts, and accessibility).
+- Preserves the tested standard DSH settings shell behaviors (trigger button, connection recovery, header actions, close button, sections rendering, onboarding steps, modal shortcuts, and accessibility).
 
 ## Compatibility baseline
 
-- Target and test against DSH `0.2.0-rc.1`, Cordis `4.0.4`, and Schemastery `3.18.4` as one coherent dependency graph.
+- Target and test against DSH `0.2.1-rc.2`, Cordis `4.0.5`, and Schemastery `3.18.5` as one coherent dependency graph. Restrict DSH peers to `0.2.1-rc.1 || 0.2.1-rc.2`; the development and source-verification target is rc.2.
 - Client code uses Cordis `Context`; `@deepseek-ai/dsh-client-runtime` is retired and must not reappear.
 - Snapshot state uses the Web module-table surface `@deepseek-ai/dsh-client-store`, and settings document actions use `ctx.remote.settings.openSettingsDocument()`.
 - Keep the enhanced settings shell synchronized with the current `@deepseek-ai/dsh-client-ui-settings-general` behavior while adding only the keyed icon slot/navigation rendering delta.
 
 ## Matching source verification
 
-DSH `0.2.0-rc.1` at `4878cdabd87d4041bdaff61d04c966883b9fd07a` is the matching source target for the published npm baseline. Use the isolated workflow in `docs/dsh-source-verification.md`; run both `pnpm run check` and the source check when changing compatibility-sensitive behavior. Keep the complete dependency graph coherent. Older release graphs are historical evidence, not the current development baseline.
+DSH `0.2.1-rc.2` at `687f282e8625c6b8d11ff58211a90524be2e4317` is the matching source target for the published npm baseline. Use the isolated workflow in `docs/dsh-source-verification.md`; run both `pnpm run check` and the source check when changing compatibility-sensitive behavior. Keep the complete dependency graph coherent. Older release graphs are historical evidence, not the current development baseline.
+
+Release `0.1.4-rc.1` is authorized as a Desktop-focused prerelease. Preserve the documented Web welcome-write conflict and full Host restart requirement; do not claim either is fixed.

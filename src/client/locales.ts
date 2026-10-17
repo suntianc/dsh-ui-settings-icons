@@ -9,8 +9,8 @@ export const zh = {
   'desktop.update.installing': '正在安装',
   'desktop.update.ready': '准备更新',
   'desktop.update.retry': '重试更新',
-  'developerTools.title': '开发者工具',
-  'developerTools.description': '显示开发者工具和预览功能',
+  'developerTools.title': '显示代码工作视图',
+  'developerTools.description': '开启后，显示轨迹、本轮代码差异，可选择完整的 Agent 预设切换',
   'developerTools.error': '无法保存开发者工具设置',
   'general.currentVersion': '当前版本',
   title: '设置',
@@ -24,6 +24,13 @@ export const zh = {
   'connection.connected': '连接成功',
   'connection.reconnect': '连接异常，点击立即重连',
   'connection.restart': '连接中断，正在自动重试，点击立即重连',
+  'hostRelease.title': '服务版本变化',
+  'hostRelease.description': '服务版本已变化，本页面已暂停热更新，刷新后加载新版本。',
+  'hostRelease.service': '服务',
+  'hostRelease.page': '页面',
+  'hostRelease.unknown': '未解析',
+  'hostRelease.reload': '刷新以加载新版本',
+  'hostRelease.later': '暂不刷新',
 }
 
 export const en = {
@@ -36,8 +43,8 @@ export const en = {
   'desktop.update.installing': 'Installing update',
   'desktop.update.ready': 'Ready to update',
   'desktop.update.retry': 'Retry update',
-  'developerTools.title': 'Developer tools',
-  'developerTools.description': 'Show developer tools and previews',
+  'developerTools.title': 'Show coding view',
+  'developerTools.description': 'Shows trajectory, code diffs, and all Agent presets',
   'developerTools.error': 'Could not save developer tools setting',
   'general.currentVersion': 'Current version',
   title: 'Settings',
@@ -51,6 +58,13 @@ export const en = {
   'connection.connected': 'Connected',
   'connection.reconnect': 'Disconnected, reconnect now',
   'connection.restart': 'Reconnecting automatically, reconnect now',
+  'hostRelease.title': 'Service version changed',
+  'hostRelease.description': 'The service version changed. This page paused live updates; reload to load the new version.',
+  'hostRelease.service': 'Service',
+  'hostRelease.page': 'Page',
+  'hostRelease.unknown': 'Unknown',
+  'hostRelease.reload': 'Reload to load the new version',
+  'hostRelease.later': 'Not now',
 }
 
 export type SettingsKey = keyof typeof zh

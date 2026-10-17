@@ -74,6 +74,10 @@ vi.mock('@deepseek-ai/dsh-client-ui-primitives', () => ({
     }, state === 'disconnected' ? disconnectedLabel : connectingLabel,
     state === 'disconnected' ? disconnectedLabel : restartActionLabel)
   },
+  IconUserOutlineMedium: ({ className }: { className?: string; size?: number }) =>
+    createElement('span', { 'aria-hidden': true, className, 'data-icon': 'account' }),
+  IconArchiveOutlineMedium: ({ className }: { className?: string; size?: number }) =>
+    createElement('span', { 'aria-hidden': true, className, 'data-icon': 'archived-sessions' }),
   IconCloseOutlineRegular: ({ className }: { className?: string; size?: number }) =>
     createElement('span', { 'aria-hidden': true, className, 'data-icon': 'close' }),
   IconSettingsOutlineMedium: ({ className }: { className?: string; size?: number }) =>

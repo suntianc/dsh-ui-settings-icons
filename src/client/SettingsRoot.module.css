@@ -116,6 +116,7 @@
 }
 
 .navList {
+  overflow-y: auto;
   flex-direction: column;
   gap: 4px;
   display: flex;

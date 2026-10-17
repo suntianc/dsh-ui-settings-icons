@@ -7,6 +7,7 @@
     "src/**/*.ts",
     "build/**/*.ts",
     "tests/host-apply.spec.ts",
+    "tests/host-patch.integration.spec.ts",
     "tsdown.config.ts",
     "vitest.config.ts"
   ],

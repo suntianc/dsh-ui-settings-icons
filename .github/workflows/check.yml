@@ -1,0 +1,46 @@
+name: Plugin checks
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        dsh: [0.2.1-rc.1, 0.2.1-rc.2]
+    env:
+      DSH_VERIFY_VERSION: ${{ matrix.dsh }}
+      PNPM_CONFIG_MINIMUM_RELEASE_AGE: '0'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.7.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Select isolated rc.1 development graph
+        if: matrix.dsh == '0.2.1-rc.1'
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          const file='package.json';
+          const manifest=JSON.parse(fs.readFileSync(file,'utf8'));
+          for (const name of Object.keys(manifest.devDependencies)) {
+            if (name.startsWith('@deepseek-ai/dsh-')) manifest.devDependencies[name]=process.env.DSH_VERIFY_VERSION;
+          }
+          fs.writeFileSync(file,JSON.stringify(manifest,null,2)+'\n');
+          JS
+      - name: Install frozen rc.2 graph
+        if: matrix.dsh == '0.2.1-rc.2'
+        run: pnpm install --frozen-lockfile
+      - name: Install isolated rc.1 graph
+        if: matrix.dsh == '0.2.1-rc.1'
+        run: pnpm install --no-frozen-lockfile
+      - run: pnpm run check
+      - name: Run emitted browser artifact without Node globals
+        run: DSH_TEST_BUILT_CLIENT=1 pnpm test tests/real-renderer.client.spec.tsx -t 'executes the shipped browser bundle'
