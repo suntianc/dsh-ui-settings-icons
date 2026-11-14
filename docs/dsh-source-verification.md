@@ -1,95 +1,72 @@
-# DSH source compatibility verification
+# Native icon compatibility verification
 
-This checkout targets the published DSH `0.2.1-rc.2` graph and its matching
-source tag at `687f282e8625c6b8d11ff58211a90524be2e4317`. Development dependencies,
-the lockfile, and default package smoke checks use this exact target, together
-with Cordis `4.0.5` and Schemastery `3.18.5`. DSH peer ranges retain the minimum
-`0.2.1-rc.1 || 0.2.1-rc.2`. Full plugin checks were also run against separately built official
-rc.1 source artifacts at `1600d8a1e140dcde43a1a0941940a0480712c011`.
-This is the Desktop-focused `0.1.4-rc.1` prerelease. Web welcome confirmation remains a known failed acceptance surface; successful offline/source checks do not override that limitation. Earlier source-artifact logs qualify the unchanged runtime changes; the final version must also pass its release gates.
+## Unreleased target
 
-## Runtime-backed test dependencies
+The migration targets the official native `settings.section.icon` inline list slot in:
 
-The integration tests load the real DSH store, SlotCore, renderer, and Cordis
-Loader rather than replacing them with local mocks. Some browser-library npm
-artifacts declare their runtime imports only as development dependencies because
-the DSH Web host supplies them. This plugin therefore supplies those imports as
-explicit **test development dependencies**, using the official rc.2 lockfile
-versions (including Zustand `4.5.7`, Immer `10.2.0`, Shiki `4.4.3`, and KaTeX
-`0.18.7`). They do not become plugin runtime dependencies. The retired, unused
-`@deepseek-ai/dsh-invariants` declaration is removed rather than mixed into the
-new graph.
+| DSH | Official source commit |
+| --- | --- |
+| 0.2.2-rc.1 | 66491b05e3f05ad35bcdd4f6cd7ed26041d9e3db |
+| 0.2.2-rc.3 | 38a6a5c965aa99ab525161efb7cc5cf1fe62fced |
 
-## Build the official artifacts once
+Default development graph: rc.3, Cordis 4.1.0, Schemastery 3.19.0. The peer range intentionally names only the two targeted releases. Test-only renderer dependencies are not plugin runtime dependencies.
 
-Use a separate scratch directory, outside any plugin or live DSH installation:
+## Registry checks
 
 ```sh
-git clone --depth 1 --branch dsh-v0.2.1-rc.2 https://github.com/deepseek-ai/deepseek-harness.git harness
-cd harness
-git rev-parse HEAD
-# Must be 687f282e8625c6b8d11ff58211a90524be2e4317.
-PNPM_CONFIG_MINIMUM_RELEASE_AGE=0 pnpm install --frozen-lockfile --ignore-scripts
+pnpm install --frozen-lockfile
+pnpm run check
+```
+
+`check` runs peer validation, lint, typecheck, real renderer/SlotCore tests, Host Loader/Include composition, build, emitted browser bundle execution, packed artifact smoke, and publint. The ordinary test run skips the built-bundle case; `test:bundle` executes it after build.
+
+## Matching-source checks
+
+Build each official tag in its own scratch checkout. Never mix versions or use a live DSH profile:
+
+```sh
+git clone --depth 1 --branch dsh-v0.2.2-rc.3 https://github.com/deepseek-ai/deepseek-harness.git harness-rc3
+cd harness-rc3
+git rev-parse HEAD # compare with the table above
+pnpm install --frozen-lockfile --ignore-scripts
 pnpm run build:lib
-pnpm --filter './packages/**' --filter './vendor/*' -r pack --pack-destination ../dsh-packages
+pnpm --filter './packages/**' --filter './vendor/*' -r pack --pack-destination ../rc3-packages
+# From the plugin checkout:
+DSH_VERIFY_VERSION=0.2.2-rc.3 pnpm run check:dsh-source -- /absolute/path/to/rc3-packages
 ```
 
-The Host and Client library build is required. Packing does not publish anything.
-The resulting directory can be reused for isolated plugin checks.
+Repeat independently for `dsh-v0.2.2-rc.1`, a separate artifact directory and `DSH_VERIFY_VERSION=0.2.2-rc.1`.
 
-## Check this plugin
-
-From this plugin's own repository:
-
-```sh
-PNPM_CONFIG_MINIMUM_RELEASE_AGE=0 pnpm install --frozen-lockfile
-PNPM_CONFIG_MINIMUM_RELEASE_AGE=0 pnpm run check
-PNPM_CONFIG_MINIMUM_RELEASE_AGE=0 pnpm run check:dsh-source -- /absolute/path/to/dsh-packages
-```
-
-The temporary `PNPM_CONFIG_MINIMUM_RELEASE_AGE=0` override permits verifying
-the newly published release before the configured registry age window expires;
-it does not change the workspace policy.
-
-The source check copies the current plugin into a new temporary directory,
-reads the supplied tarball manifests, rejects mixed DSH versions, explicitly
-supplies the complete DSH dependency/peer closure, and pins pi-ai to the plugin's
-development version when present. It installs that isolated graph and runs
-`pnpm peers check` followed by the unmodified `pnpm run check` command.
-
-The runner leaves the verification directory and `artifacts.json` with SHA-512
-checksums for review. The fixed-tag build recipe establishes provenance; the
-runner identifies the supplied bytes and checks their versions, and does not
-claim to authenticate arbitrary user-supplied tarballs. Its local file overrides
-and generated lockfile stay in the temporary directory. They never enter this
-repository, an installed package, or a user profile.
-
-Package smoke checks accept both registry and source-artifact lock identities
-while continuing to verify the selected version. The registry graph targets `0.2.1-rc.2`; source checks default to that target. To verify rc.1, build its official `dsh-v0.2.1-rc.1` tag in a separate checkout and pack into a separate directory, then run:
-
-```sh
-DSH_VERIFY_VERSION=0.2.1-rc.1 pnpm run check:dsh-source -- /absolute/path/to/rc1-packages
-```
-
-Do not mix rc.1 and rc.2 tarballs. Both source graphs passed the full plugin check on 2026-10-17. The normal suite reports 29 passed / 3 skipped: the two known Host hot-replacement regressions and the emitted-bundle case gated to run after build. `test:bundle` separately runs and passes that emitted-bundle case.
-
-## 中文说明
-
-当前检出版本以已发布的 DSH `0.2.1-rc.2`、Cordis `4.0.5` 与
-Schemastery `3.18.5` 为开发及默认验证目标。peer 最低范围保留
-`0.2.1-rc.1 || 0.2.1-rc.2`；rc.1 与 rc.2 已分别使用固定官方 tag 的源码制品通过完整插件检查。此次 `0.1.4-rc.1` 为桌面范围预发布；Web 欢迎确认的配置覆盖冲突未通过验收，完整 Host 重启要求仍保留。旧 DSH
-请保留兼容的旧插件版本。
-
-按上面的固定 tag 构建、打包一次，然后在本插件目录运行
-`pnpm run check:dsh-source -- /绝对路径/dsh-packages`。脚本在临时目录内安装
-完整源码包图并运行全部检查，输出位置和制品哈希供复核。正式 package.json
-和锁文件不会写入本机临时路径，也不会安装到现用 profile。
-
-升级验证覆盖离线类型检查、测试、构建、打包 smoke 和 publint；
-真实 OAuth、私有服务请求和用户现用 profile 不属于这些离线检查的证明范围。
+The source check copies the plugin into a temporary directory, rejects mixed DSH versions, overrides the complete dependency closure with supplied artifacts, records their hashes, and runs the complete plugin check. The fixed source checkout establishes provenance; hashes identify bytes, not authenticity by themselves.
 
 ## Evidence boundaries
 
-Ordinary `check` runs the cold Host composition test and source-renderer tests, then builds and executes the emitted client factory in a browser-only VM scope with the real renderer. This catches accidental Node globals without claiming a visual browser run. Two optional hot-swap tests are skipped unless `DSH_VERIFY_HOT_SWAP=1`; the unmodified 1.0.6 Loader fails them because package-name replacement does not remount the old fiber. Keep those failures separate from the plugin's checks. An experimental upstream Loader patch exposed further concurrency defects during review and is not a recommended or included runtime fix. The plugin workflow relies on a full Host restart, not that candidate.
+This document describes the required checks, not a claim that every check has passed. Preserve the actual logs and report completed, failed and blocked stages separately.
 
-The cloud Chromium attempt was blocked by its sandbox before a page opened; no visual screenshot or macOS/Electron validation is claimed. Local acceptance should first inspect the actual installed package, Host entry and boot roster, then test a full Host restart before considering any configuration or runtime change.
+Renderer tests cover ID matching, native size/active props, priority fallback, late slot declaration, unloading/reloading, and the browser factory without Node globals. Host composition checks preserve the official settings entry and its welcome configuration during a fresh patch assembly.
+
+These are not Windows/Electron visual tests and do not establish migration of a previously modified user profile. Before release, check a clean rc.1/rc.3 installation and an old-plugin upgrade with a full Host restart. Confirm official settings permission gating, welcome acknowledgement, shortcuts, update indicators and rc.3 channel selection remain intact. Any persistent manual `ui-settings-general.disabled` override must be inspected explicitly; this plugin never edits it automatically.
+
+## 2026-11-14 registry validation
+
+The migrated source passed the complete `pnpm run check` independently against both rc.1 and rc.3 registry graphs: peer validation, lint, typecheck, 6 ordinary tests, one separately executed emitted-bundle test, build, packed artifact smoke and publint. The ordinary suite's single skip is the bundle test executed by the next phase. rc.1 emitted missing upstream sourcemap warnings, not test failures.
+
+The manifest's client injection dependencies are also checked to expose actual client plugin metadata/exports, rather than naming pure shared libraries. Host-range smoke mirrors `includePrerelease: true` and rejects unverified releases.
+
+Source-build and Windows/Electron acceptance are separate from these completed registry checks. No package was published and no existing profile was modified.
+
+## 2026-11-14 macOS acceptance
+
+On macOS, both fixed official source revisions above passed frozen install and the original complete `build:lib`, without source modifications. The resulting 381 rc.1 and 383 rc.3 source packages each passed the plugin's complete source-artifact gate. The candidate also passed the registry `check` on the Mac.
+
+Isolated real Web instances of rc.1 and rc.3 accepted the candidate without compatibility exemptions. Both rendered OpenAI and Antigravity icons for test-only section registrations and retained the stock unknown-section fallback. The official settings shell and General controls remained present; section switching and Close worked in rc.3. Welcome acknowledgement saved successfully.
+
+Upgrade acceptance used a disposable profile, not the owner's active profile: published plugin 0.1.4-rc.1 on DSH 0.2.1-rc.2 reproduced its known welcome-save error. Updating that same profile to 0.2.0 and DSH 0.2.2-rc.1 restored the official settings entry, removed the old bundle's disabled/replacement entries, and allowed welcome acknowledgement to save. A subsequent full Host restart retained the acknowledgement. No user-layer disabled override was present in this test. Manually persisted overrides remain a separate migration condition and are never silently rewritten.
+
+An isolated rc.3 Electron process accepted and booted the candidate, using separate DSH_HOME and Electron user-data directories. Its native UI was **not** validated: the available app selector resolved the owner's other running instance, which was left untouched. Desktop update/channel UI, native shortcuts, restricted-client permission gating, Windows, and real provider login remain unverified. Browser acceptance does not establish those surfaces. No publication is implied by these records.
+
+### Native Desktop follow-up
+
+With the owner's authorization, 0.2.0 was temporarily installed in the existing macOS Desktop rc.3 profile after backing up its package and configuration files. After a normal quit/restart, the plugin manager showed v0.2.0 enabled and its component running. The official settings and General controls rendered; the update-channel menu retained its current selection and exposed both channels without changing it. The shortcut editor opened and closed, and Command-comma reopened Settings. No preferences, channels, credentials or conversations were changed. The candidate was then removed, all five backed-up profile metadata files matched their original SHA-256 hashes, and the original conversation reopened normally.
+
+This closes the earlier native-window selection limitation for settings/channel/shortcut coexistence. It does not claim a real updater download/install, restricted-client permission scenario, Windows test, or provider login. Brand icon visuals were independently tested in the real rc.1/rc.3 Web instances using test-only section registrations, not by installing unrelated auth plugins in the owner's profile. Final version 0.2.0 also passed both complete source-artifact checks and the Mac registry check.

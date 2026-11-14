@@ -67,11 +67,22 @@ try {
       }
     }
   }
+  // Match the Host compatibility gate, including prerelease interpretation.
+  for (const version of ['0.2.2-rc.1', '0.2.2-rc.3']) {
+    for (const [name, range] of Object.entries(manifest.peerDependencies)) {
+      if (name.startsWith('@deepseek-ai/dsh-') && !semver.satisfies(version, range, { includePrerelease: true })) {
+        throw new Error(`package smoke: Host rejects ${name} on ${version}`)
+      }
+    }
+  }
+  for (const version of ['0.1.1-rc.1', '0.2.1-rc.2', '0.2.2-rc.2', '0.2.2', '0.2.3-rc.1']) {
+    if (semver.satisfies(version, DSH_PEER_RANGE, { includePrerelease: true })) {
+      throw new Error(`package smoke: unexpectedly accepts unverified Host ${version}`)
+    }
+  }
   const coherentBaselines = [
-    ['peerDependencies', '@deepseek-ai/cordis', `^${CORDIS_BASELINE}`],
+    ['peerDependencies', '@deepseek-ai/cordis', `~${CORDIS_BASELINE}`],
     ['devDependencies', '@deepseek-ai/cordis', CORDIS_BASELINE],
-    ['dependencies', '@deepseek-ai/schemastery', `^${SCHEMASTERY_BASELINE}`],
-    ['peerDependencies', '@deepseek-ai/schemastery', `^${SCHEMASTERY_BASELINE}`],
     ['devDependencies', '@deepseek-ai/schemastery', SCHEMASTERY_BASELINE],
   ]
   for (const [section, name, expected] of coherentBaselines) {
@@ -82,6 +93,12 @@ try {
   const clientInject = manifest.dsh?.client?.inject ?? []
   if (clientInject.some((name) => RETIRED_DSH_PACKAGES.has(name))) {
     throw new Error(`package smoke: dsh.client.inject references a package retired by ${DSH_BASELINE}`)
+  }
+  for (const name of clientInject) {
+    const dependency = JSON.parse(await readFile(new URL(import.meta.resolve(`${name}/package.json`)), 'utf8'))
+    if (!dependency.dsh?.client || !dependency.exports?.['./client']) {
+      throw new Error(`package smoke: injected ${name} is not a client plugin`)
+    }
   }
   const lockfile = await readFile(resolve(sourceRoot, 'pnpm-lock.yaml'), 'utf8')
   const dshResolutions = resolvedDshPackages(lockfile)
@@ -136,10 +153,7 @@ try {
   }
   for (const marker of [
     'window.__ModuleLoader__.load',
-    '@deepseek-ai/dsh-client-store',
-    'sidebar.settings',
     'settings.section.icon',
-    'settings.launcher',
   ]) {
     if (!client.includes(marker)) throw new Error(`package smoke: client bundle lacks ${marker}`)
   }
@@ -148,9 +162,10 @@ try {
   }
 
   const patch = await readFile(resolve(packageRoot, manifest.dsh?.bundle?.patch ?? ''), 'utf8')
-  if (!/- id: ui-settings-general\s+disabled: true[\s\S]*- id: ui-settings-general\s+name: 'dsh-ui-settings-icons'/u.test(patch)) {
-    throw new Error('package smoke: replacement settings entry must preserve the welcome notice namespace')
+  if (/disabled:|id: ui-settings-general/u.test(patch) || !patch.includes('id: ui-settings-icons')) {
+    throw new Error('package smoke: native icons must not replace or disable the official settings plugin')
   }
+
 
   console.log(`package smoke: ${filename} exposes Host, client, types, and bundle patch`)
 } finally {

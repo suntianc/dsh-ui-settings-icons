@@ -1,15 +1,15 @@
 /** Minimum supported peer version and the exact development/source target. */
-export const DSH_BASELINE = '0.2.1-rc.1'
-export const DSH_SOURCE_VERSION = '0.2.1-rc.2'
+export const DSH_BASELINE = '0.2.2-rc.1'
+export const DSH_SOURCE_VERSION = '0.2.2-rc.3'
 export const DSH_SOURCE_COMMITS = {
-  '0.2.1-rc.1': '1600d8a1e140dcde43a1a0941940a0480712c011',
-  '0.2.1-rc.2': '687f282e8625c6b8d11ff58211a90524be2e4317',
+  '0.2.2-rc.1': '66491b05e3f05ad35bcdd4f6cd7ed26041d9e3db',
+  '0.2.2-rc.3': '38a6a5c965aa99ab525161efb7cc5cf1fe62fced',
 }
 export const DSH_SOURCE_COMMIT = DSH_SOURCE_COMMITS[DSH_SOURCE_VERSION]
-export const DSH_PEER_RANGE = '0.2.1-rc.1 || 0.2.1-rc.2'
-export const DSH_EXPERIMENTAL_PEER_RANGE = '0.2.1-rc.2'
-export const CORDIS_BASELINE = '4.0.5'
-export const SCHEMASTERY_BASELINE = '3.18.5'
+export const DSH_PEER_RANGE = '0.2.2-rc.1 || 0.2.2-rc.3'
+export const DSH_EXPERIMENTAL_PEER_RANGE = '0.2.2-rc.3'
+export const CORDIS_BASELINE = '4.1.0'
+export const SCHEMASTERY_BASELINE = '3.19.0'
 export const DSH_VERIFY_VERSION = process.env.DSH_VERIFY_VERSION ?? DSH_SOURCE_VERSION
 if (![DSH_BASELINE, DSH_SOURCE_VERSION].includes(DSH_VERIFY_VERSION)) {
   throw new Error('Unsupported DSH verification version')

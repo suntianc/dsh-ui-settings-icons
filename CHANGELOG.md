@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0] - 2026-11-14
+
+- Migrate to the native DSH 0.2.2 settings icon slot; preserve the official settings shell.
+- Add lower-priority brand contributions and isolate rc.1/rc.3 compatibility checks.
+- Remove the old SettingsRoot export and replacement-shell patch. Verify macOS Web/Desktop settings, channel and shortcut UI, plus an isolated old-profile upgrade with a full Host restart. Windows remains untested.
+
+
 ## [0.1.4-rc.1] - 2026-10-17
 
 - Target DSH `0.2.1-rc.1` / `0.2.1-rc.2` explicitly with the coherent rc.2 development graph (Cordis 4.0.5, Schemastery 3.18.5).

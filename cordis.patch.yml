@@ -1,6 +1,3 @@
-- id: ui-settings-general
-  disabled: true
-
 - insert:
-    - id: ui-settings-general
+    - id: ui-settings-icons
       name: 'dsh-ui-settings-icons'

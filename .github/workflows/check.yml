@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        dsh: [0.2.1-rc.1, 0.2.1-rc.2]
+        dsh: [0.2.2-rc.1, 0.2.2-rc.3]
     env:
       DSH_VERIFY_VERSION: ${{ matrix.dsh }}
       PNPM_CONFIG_MINIMUM_RELEASE_AGE: '0'
@@ -24,7 +24,7 @@ jobs:
         with:
           node-version: '24'
       - name: Select isolated rc.1 development graph
-        if: matrix.dsh == '0.2.1-rc.1'
+        if: matrix.dsh == '0.2.2-rc.1'
         run: |
           node --input-type=module <<'JS'
           import fs from 'node:fs';
@@ -35,11 +35,11 @@ jobs:
           }
           fs.writeFileSync(file,JSON.stringify(manifest,null,2)+'\n');
           JS
-      - name: Install frozen rc.2 graph
-        if: matrix.dsh == '0.2.1-rc.2'
+      - name: Install frozen rc.3 graph
+        if: matrix.dsh == '0.2.2-rc.3'
         run: pnpm install --frozen-lockfile
       - name: Install isolated rc.1 graph
-        if: matrix.dsh == '0.2.1-rc.1'
+        if: matrix.dsh == '0.2.2-rc.1'
         run: pnpm install --no-frozen-lockfile
       - run: pnpm run check
       - name: Run emitted browser artifact without Node globals
